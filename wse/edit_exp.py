@@ -16,11 +16,12 @@ import argparse
 import json
 import random
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
-from .llm import LLM, BrunnaCompleteLLM
+from .llm import LLM, BrunnaCompleteLLM, RetryingLLM
 from .mlp import MLP
 from .tasks import TASKS
 
@@ -92,42 +93,60 @@ def _intro(net: MLP) -> str:
             + net.to_text())
 
 
-def llm_fix(llm: LLM, net: MLP, budget: int) -> tuple[list[dict], int]:
-    """回傳 (edits, 實際使用的 forward pass 數)。"""
+def llm_fix(llm: LLM, net: MLP, budget: int, intro: Optional[str] = None) -> tuple[list[dict], int, str]:
+    """回傳 (edits, 實際使用的 forward pass 數, LLM 自述的理由)。intro 是任務說明加權重文字,
+    預設用本實驗(diagonal、單一區域)的說法。"""
+    intro = _intro(net) if intro is None else intro
     context, used = "", 0
     if budget > 0:
-        q = llm.complete(_intro(net) + f"\n\n你可以先查詢網路在最多 {budget} 個點的輸出。"
+        q = llm.complete(intro + f"\n\n你可以先查詢網路在最多 {budget} 個點的輸出。"
                          "請在 queries 列出這些點,格式 [[x,y],...]。", QUERY_SCHEMA)
         pts = [p for p in q.get("queries", []) if isinstance(p, list) and len(p) == 2][:budget]
         used = len(pts)
         results = [f"({p[0]:.3f}, {p[1]:.3f}) -> {net.predict([float(p[0]), float(p[1])]):.3f}" for p in pts]
         context = "\n\n查詢結果:\n" + "\n".join(results)
     ans = llm.complete(
-        _intro(net) + context +
+        intro + context +
         "\n\n請用盡量少的權重修改修好它。edits 每項為 {layer, row, col, value}:layer 從 1 起算,"
         "row 是該層輸出單元編號(從 0 起),col 是輸入編號(從 0 起),col=-1 代表偏置 b。"
         "value 是新值。reason 簡述你判斷的缺陷位置與修法。", EDIT_SCHEMA)
-    return ans.get("edits", []), used
+    return ans.get("edits", []), used, ans.get("reason", "")
 
 
-def run(llm: LLM, budgets: list[int], seeds: int, rng: random.Random) -> list[dict]:
+def run(llm: LLM, budgets: list[int], seeds: int, rng: random.Random,
+        done: Optional[list[dict]] = None, on_row: Callable[[dict], None] = lambda row: None) -> list[dict]:
+    """done 是先前已完成的列:同一個 (seed, budget) 的 LLM 修改直接沿用,不重新呼叫(可續跑)。
+    網路與評估資料只由 rng 決定,與 LLM 的回答無關,所以續跑時重建出的網路相同。
+    每完成一列就呼叫 on_row(逐筆存檔用)。"""
+    prior = {(r["seed"], r["budget"]): r for r in (done or []) if r["arm"] == "llm"}
+    seen_seeds = {r["seed"] for r in (done or []) if r["arm"] == "no_edit"}
     rows = []
+
+    def emit(row: dict, fresh: bool) -> None:
+        rows.append(row)
+        if fresh:
+            on_row(row)
+
     for s in range(seeds):
         net = make_defective(rng)
         ev_rng_state = rng.getstate()
         base = evaluate(net, rng)
         n_params = net.num_params()
-        rows.append({"seed": s, "arm": "no_edit", "budget": 0, "changed": 0, "frac": 0.0, **base})
+        emit({"seed": s, "arm": "no_edit", "budget": 0, "changed": 0, "frac": 0.0, **base}, s not in seen_seeds)
         for budget in budgets:
-            edits, used = llm_fix(llm, net, budget)
+            old = prior.get((s, budget))
+            if old:
+                edits, used, reason = old["edits"], old["queries_used"], old.get("reason", "")
+            else:
+                edits, used, reason = llm_fix(llm, net, budget)
             fixed, changed = apply_edits(net, edits)
             rng.setstate(ev_rng_state)
-            rows.append({"seed": s, "arm": "llm", "budget": budget, "queries_used": used, "changed": changed,
-                         "frac": changed / n_params, **evaluate(fixed, rng)})
+            emit({"seed": s, "arm": "llm", "budget": budget, "queries_used": used, "changed": changed,
+                  "frac": changed / n_params, **evaluate(fixed, rng), "edits": edits, "reason": reason}, not old)
             rnd, rc = apply_edits(net, random_edits(net, max(changed, 1), rng))
             rng.setstate(ev_rng_state)
-            rows.append({"seed": s, "arm": "random_edit", "budget": budget, "changed": rc,
-                         "frac": rc / n_params, **evaluate(rnd, rng)})
+            emit({"seed": s, "arm": "random_edit", "budget": budget, "changed": rc,
+                  "frac": rc / n_params, **evaluate(rnd, rng)}, not old)
     return rows
 
 
@@ -148,11 +167,19 @@ def main(argv: Optional[list[str]] = None) -> int:
     ap.add_argument("--budgets", type=int, nargs="+", default=[0, 10])
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--out", default="data/edit_results.json")
+    ap.add_argument("--out", default="data/edit_results.jsonl")
     args = ap.parse_args(argv)
-    rows = run(BrunnaCompleteLLM(args.model), args.budgets, args.seeds, random.Random(args.seed))
-    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.out).write_text(json.dumps(rows, ensure_ascii=False, indent=1))
+    # 唯一組裝具體 LLM 的地方;結果逐筆附加,中斷後重跑會沿用已完成的 LLM 修改
+    llm = RetryingLLM(BrunnaCompleteLLM(args.model), log=lambda m: print(m, file=sys.stderr), sleep=time.sleep)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    done = [json.loads(l) for l in out.read_text().splitlines() if l.strip()] if out.exists() else []
+
+    def append(row: dict) -> None:
+        with out.open("a") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+    rows = run(llm, args.budgets, args.seeds, random.Random(args.seed), done, append)
     print("\n".join(summarize(rows)))
     return 0
 

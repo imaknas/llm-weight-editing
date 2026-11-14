@@ -28,6 +28,8 @@ class BrunnaCompleteLLM:
         self.model_name = model_name
         self._run = runner
         self._schema_dir = schema_dir
+        self.calls = 0             # 成功的呼叫數
+        self.total_cost_usd = 0.0  # 平台回報的累計花費(回報裡沒有這欄就不加)
 
     def complete(self, prompt: str, schema: Optional[dict] = None) -> dict:
         cmd = ["brunna", "complete", self.model_name]
@@ -49,6 +51,9 @@ class BrunnaCompleteLLM:
         out = json.loads(proc.stdout)
         if isinstance(out, dict) and ("llm_error" in out or out.get("is_error")):
             raise LLMError(out.get("llm_error") or str(out.get("result", ""))[:500])
+        self.calls += 1
+        if isinstance(out, dict) and isinstance(out.get("total_cost_usd"), (int, float)):
+            self.total_cost_usd += out["total_cost_usd"]
         if schema is not None:
             if not isinstance(out, dict) or "structured_output" not in out:
                 raise LLMError("給了 schema 但輸出沒有 structured_output")

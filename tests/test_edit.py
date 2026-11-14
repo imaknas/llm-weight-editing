@@ -39,6 +39,26 @@ class EditTest(unittest.TestCase):
         self.assertEqual([r.get("queries_used") for r in llm_rows], [0, 2])  # 超過預算被截斷
         self.assertEqual(len(summarize(rows)), 5)  # no_edit + (llm, random) x 2 budgets
 
+    def test_run_resumes_without_recalling_llm(self):
+        edit = {"layer": 3, "row": 0, "col": -1, "value": 1.0}
+        saved = []
+        first = run(ScriptedLLM(lambda p: {"edits": [edit], "reason": "r"}), [0], 2, random.Random(2),
+                    on_row=saved.append)
+        self.assertEqual(saved, first)  # 每一列都逐筆送出
+
+        def boom(prompt):
+            raise AssertionError("已完成的部分不該再呼叫 LLM")
+
+        extra = []
+        again = run(ScriptedLLM(boom), [0], 2, random.Random(2), done=saved, on_row=extra.append)
+        self.assertEqual(again, first)
+        self.assertEqual(extra, [])
+        # 只完成第一個 seed 時,第二個 seed 的三列都要補存
+        partial = [r for r in saved if r["seed"] == 0]
+        run(ScriptedLLM(lambda p: {"edits": [edit], "reason": "r"}), [0], 2, random.Random(2),
+            done=partial, on_row=extra.append)
+        self.assertEqual(extra, [r for r in first if r["seed"] == 1])
+
 
 if __name__ == "__main__":
     unittest.main()
