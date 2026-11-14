@@ -168,15 +168,28 @@ def llm_rows(case: dict, llm: LLM, budget: int, repair: Trainer, rng: random.Ran
 
 
 def summarize(rows: list[dict]) -> list[str]:
+    """依 (k, 做法, 查詢預算, 由哪個模型改) 取平均。不經 LLM 的基準沒有 editor。"""
     lines = []
     for k in sorted({r["k"] for r in rows}):
-        for arm, b in sorted({(r["arm"], r["budget"]) for r in rows if r["k"] == k}):
-            rs = [r for r in rows if (r["k"], r["arm"], r["budget"]) == (k, arm, b)]
+        groups = sorted({(r["arm"], r["budget"], r.get("editor", "")) for r in rows if r["k"] == k})
+        for arm, b, ed in groups:
+            rs = [r for r in rows if (r["k"], r["arm"], r["budget"], r.get("editor", "")) == (k, arm, b, ed)]
             mean = lambda f: sum(r[f] for r in rs) / len(rs)
-            lines.append(f"k={k:<3d} {arm:11s} budget={b:<4d} n={len(rs)} 全域={mean('overall'):.2f} "
+            lines.append(f"k={k:<3d} {arm:11s} {ed:22s} budget={b:<4d} n={len(rs)} 全域={mean('overall'):.2f} "
                          f"缺陷區={mean('defect_region'):.2f} 其餘={mean('outside'):.2f} "
                          f"改動數={mean('changed'):.0f}")
     return lines
+
+
+FIRST_EDITOR = "weight-reader"
+
+
+def labelled(rows: list[dict]) -> list[dict]:
+    """由哪個模型改的記在每一列的 editor;這個欄位出現之前的結果都是 FIRST_EDITOR 跑的。"""
+    for r in rows:
+        if r["arm"] not in ("no_edit", "dense_ft"):
+            r.setdefault("editor", FIRST_EDITOR)
+    return rows
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -208,7 +221,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     if args.cmd == "report":
-        print("\n".join(summarize(read_jsonl(out))))
+        print("\n".join(summarize(labelled(read_jsonl(out)))))
         return 0
 
     # 訓練後端只在這裡決定;核心邏輯只認 Trainer 這個形狀
@@ -225,7 +238,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 0
 
     cases = json.loads(nets.read_text())
-    have = {(r["k"], r["seed"], r["arm"], r["budget"]) for r in read_jsonl(out)}
+    rows_so_far = labelled(read_jsonl(out))
+    have = {(r["k"], r["seed"], r["arm"], r["budget"], r.get("editor")) for r in rows_so_far}
     inner = BrunnaCompleteLLM(args.model)
     llm = RetryingLLM(inner, log=lambda m: print(m, file=sys.stderr), sleep=time.sleep)
     query_repair = adam_trainer(200)
@@ -233,15 +247,17 @@ def main(argv: Optional[list[str]] = None) -> int:
         if (args.only_ks and c["k"] not in args.only_ks) or (args.only_seeds and c["seed"] not in args.only_seeds):
             continue
         for budget in args.budgets:
-            if (c["k"], c["seed"], "llm", budget) in have:
+            if (c["k"], c["seed"], "llm", budget, args.model) in have:
                 continue
             before = (inner.calls, inner.total_cost_usd)
             rows = llm_rows(c, llm, budget, query_repair, random.Random(2000 + 31 * c["k"] + c["seed"] + budget))
+            for row in rows:
+                row["editor"] = args.model
             rows[0]["llm_calls"] = inner.calls - before[0]
             rows[0]["reported_cost_usd"] = round(inner.total_cost_usd - before[1], 4)
             append(rows)
             print(f"k={c['k']} seed={c['seed']} budget={budget} 完成", flush=True)
-    print("\n".join(summarize(read_jsonl(out))))
+    print("\n".join(summarize(labelled(read_jsonl(out)))))
     return 0
 
 
