@@ -46,9 +46,16 @@ class BrunnaCompleteLLM:
             if schema_path:
                 import os
                 os.unlink(schema_path)
+        try:
+            out = json.loads(proc.stdout)
+        except ValueError:
+            out = None
         if proc.returncode != 0:
-            raise LLMError(f"brunna complete 失敗(exit {proc.returncode}): {proc.stderr.strip()[:500]}")
-        out = json.loads(proc.stdout)
+            # 被拒絕或執行失敗時,原因在 stdout 的 llm_error;平台層的錯誤才在 stderr
+            why = (out.get("llm_error") if isinstance(out, dict) else None) or proc.stderr.strip()[:500]
+            raise LLMError(f"brunna complete 失敗(exit {proc.returncode}): {why}")
+        if out is None:
+            raise LLMError(f"brunna complete 的輸出不是 JSON: {proc.stdout[:200]}")
         if isinstance(out, dict) and ("llm_error" in out or out.get("is_error")):
             raise LLMError(out.get("llm_error") or str(out.get("result", ""))[:500])
         self.calls += 1

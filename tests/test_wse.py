@@ -69,6 +69,28 @@ class NoneControlTest(unittest.TestCase):
         self.assertEqual({c.kind for c in cases[:n_task]}, {"trained", "permuted", "shuffled"})
         self.assertEqual({c.kind for c in cases[n_task:]}, {"random", "randlabel"})
 
+class BrunnaCompleteTest(unittest.TestCase):
+    def _llm(self, returncode, stdout, stderr=""):
+        import subprocess
+        from wse.llm import BrunnaCompleteLLM
+        return BrunnaCompleteLLM("m", runner=lambda *a, **k: subprocess.CompletedProcess(a, returncode, stdout, stderr))
+
+    def test_failure_reason_comes_from_llm_error(self):
+        from wse.llm import LLMError
+        with self.assertRaises(LLMError) as cm:
+            self._llm(1, '{"is_error": true, "llm_error": "超過 600 秒"}').complete("p")
+        self.assertIn("超過 600 秒", str(cm.exception))
+        with self.assertRaises(LLMError) as cm:
+            self._llm(2, "", "hub-run: 找不到工作").complete("p")
+        self.assertIn("找不到工作", str(cm.exception))
+
+    def test_success_accumulates_reported_cost(self):
+        llm = self._llm(0, '{"structured_output": {"a": 1}, "total_cost_usd": 0.5}')
+        self.assertEqual(llm.complete("p", {"type": "object"}), {"a": 1})
+        llm.complete("p", {"type": "object"})
+        self.assertEqual((llm.calls, llm.total_cost_usd), (2, 1.0))
+
+
 if __name__ == "__main__":
     unittest.main()
 
