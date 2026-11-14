@@ -4,8 +4,9 @@ import unittest
 from wse.defects import PatchDefect, evaluate, make_defective, scattered_patches
 from wse.llm import ScriptedLLM
 from wse.mlp import MLP
-from wse.scatter_exp import baseline_rows, build, changed_slots, keep_top, llm_rows, min_sparse, summarize
-from wse.tasks import TASKS
+from wse.scatter_exp import (baseline_rows, build, clip_edits, intro, layer_bounds, llm_rows, load_case,
+                             random_edits, summarize)
+from wse.tasks import TASKS, _best_line_accuracy, random_wavy_waves, wavy_task
 
 
 def py_trainer(epochs):
@@ -38,49 +39,77 @@ class PatchTest(unittest.TestCase):
         self.assertGreater(e["outside"], 0.85)
 
 
+class WavyTaskTest(unittest.TestCase):
+    def test_targets_are_balanced_and_not_a_line(self):
+        rng = random.Random(0)
+        for _ in range(3):
+            task = wavy_task(random_wavy_waves(rng))
+            frac = sum(y for _, y in task.sample(rng, 1000)) / 1000
+            self.assertTrue(0.35 <= frac <= 0.65)
+            self.assertLessEqual(_best_line_accuracy(task), 0.75)
+
+    def test_same_waves_same_labels(self):
+        waves = random_wavy_waves(random.Random(1))
+        a, b = wavy_task(waves), wavy_task([list(w) for w in waves])  # 存檔再讀回會變成 list
+        self.assertEqual([a.label(0.1 * i, -0.3) for i in range(-9, 10)],
+                         [b.label(0.1 * i, -0.3) for i in range(-9, 10)])
+
+
+class BoundsTest(unittest.TestCase):
+    def setUp(self):
+        self.net = MLP([2, 2, 1], [[[1.0, -3.0], [0.5, 0.2]], [[0.4, -0.6]]], [[0.1, -5.0], [0.05]])
+
+    def test_layer_bounds_cover_weights_and_biases(self):
+        self.assertEqual(layer_bounds(self.net), [5.0, 0.6])
+
+    def test_clip_keeps_sign_counts_and_passes_malformed(self):
+        edits = [{"layer": 1, "row": 0, "col": 0, "value": 99}, {"layer": 2, "row": 0, "col": 0, "value": -7},
+                 {"layer": 1, "row": 0, "col": 1, "value": 2.5}, {"layer": 9, "row": 0, "col": 0, "value": 1},
+                 "junk"]
+        out, clipped = clip_edits(edits, [5.0, 0.6])
+        self.assertEqual(clipped, 2)
+        self.assertEqual([e["value"] for e in out[:3]], [5.0, -0.6, 2.5])
+        self.assertEqual(out[3:], edits[3:])
+
+    def test_random_edits_stay_in_bounds(self):
+        bounds = layer_bounds(self.net)
+        for e in random_edits(self.net, 50, bounds, random.Random(0)):
+            self.assertLessEqual(abs(e["value"]), bounds[e["layer"] - 1])
+
+
 class ScatterExpTest(unittest.TestCase):
     def setUp(self):
-        self.cases = build([1], 1, random.Random(0), TASKS["diagonal"], py_trainer(40), py_trainer(40),
-                           sizes=[2, 6, 1])
+        self.case = build([1], 1, random.Random(0), py_trainer(30), py_trainer(30), sizes=[2, 6, 1],
+                          n_train=150)[0]
 
-    def test_keep_top_all_equals_target(self):
-        a = MLP.random_init([2, 3, 1], random.Random(1))
-        b = MLP.random_init([2, 3, 1], random.Random(2))
-        ranked = changed_slots(a, b)
-        self.assertEqual(len(ranked), a.num_params())
-        self.assertEqual(keep_top(a, ranked, len(ranked)).to_dict(), b.to_dict())
-        self.assertEqual(keep_top(a, ranked, 0).to_dict(), a.to_dict())
+    def test_baseline_rows(self):
+        rows = baseline_rows(self.case, py_trainer(20), random.Random(3))
+        self.assertEqual([r["arm"] for r in rows], ["no_edit", "dense_ft"])
 
-    def test_min_sparse_finds_first_passing_size(self):
-        a = MLP.random_init([2, 3, 1], random.Random(1))
-        ranked = changed_slots(a, MLP.random_init([2, 3, 1], random.Random(2)))
-        calls = []
+    def test_llm_rows_protocol(self):
+        prompts = []
 
-        def score(net):
-            calls.append(net)
-            ok = len(calls) >= 3  # 第三次(n=4)才過
-            return {"defect_region": 1.0 if ok else 0.0, "outside": 1.0}
+        def fn(prompt):
+            prompts.append(prompt)
+            if "queries" in prompt:
+                return {"queries": [[0.5, 0.5], [0.1, 0.2], "bad", [0.3, 0.3], [9, 9]]}
+            return {"edits": [{"layer": 2, "row": 0, "col": -1, "value": 1e6}], "reason": "r"}
 
-        self.assertEqual(min_sparse(a, ranked, score), 4)
-        self.assertIsNone(min_sparse(a, ranked, lambda n: {"defect_region": 0.0, "outside": 1.0}))
+        rows = llm_rows(self.case, ScriptedLLM(fn), 3, py_trainer(5), random.Random(4), draws=3)
+        self.assertEqual([r["arm"] for r in rows], ["llm", "random_edit", "query_ft"])
+        llm = rows[0]
+        self.assertEqual((llm["queries_used"], llm["changed"], llm["clipped"]), (3, 1, 1))  # 預算截斷、超限被截
+        self.assertEqual(llm["edits"][0]["value"], 1e6)  # 存的是 LLM 原本給的值
+        self.assertIn("正確類別", prompts[1])
+        self.assertIn("上限", prompts[1])
+        self.assertEqual(len(summarize(rows)), 3)
 
-    def test_rows_for_every_arm(self):
-        c = self.cases[0]
-        base, ranked = baseline_rows(c, py_trainer(40), random.Random(3))
-        self.assertEqual([r["arm"] for r in base], ["no_edit", "dense_ft"])
-        llm = ScriptedLLM(lambda p: {"queries": [[0.5, 0.5]]} if "queries" in p
-                          else {"edits": [{"layer": 2, "row": 0, "col": -1, "value": 9.0}], "reason": "r"})
-        rows = llm_rows(c, llm, 5, ranked, random.Random(4), draws=3)
-        self.assertEqual([r["arm"] for r in rows], ["llm", "random_edit", "sparse_ft"])
-        self.assertEqual((rows[0]["queries_used"], rows[0]["changed"], rows[0]["max_abs_value"]), (1, 1, 9.0))
-        self.assertEqual(len(summarize(base + rows)), 5)
-
-    def test_prompt_does_not_reveal_patch_count(self):
-        from wse.scatter_exp import intro, load_case
-        net, _, task = load_case(self.cases[0])
-        text = intro(net, task)
-        self.assertIn(task.description, text)
-        self.assertNotIn("象限", text)
+    def test_prompt_gives_no_rule_or_patch_count(self):
+        net, _, task = load_case(self.case)
+        text = intro(net)
+        self.assertIn("沒有公式", text)
+        for leak in ("sin", "象限", "x + y"):
+            self.assertNotIn(leak, text)
 
 
 if __name__ == "__main__":
