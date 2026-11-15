@@ -32,6 +32,6 @@ Six editor episodes on IWIBench `factual_update` (development split), run with `
 - Long runs of numbers in truncated `inspect_target` outputs.
 - Encrypted reasoning items (gpt-6.1-sol) and thinking-block signatures (claude-fable-5-2). The API returned no readable reasoning text for either model.
 
-The `export` field of each `meta.json` gives the counts. Write requests are complete. They are expressions over named tensors plus short constants supplied by the editor, so replaying a file's `write_weights` payloads in order against the base checkpoint rebuilds the same patch.
+The `export` field of each `meta.json` gives the counts. Write requests are complete. They are expressions over named tensors, short constants supplied by the editor, and handles returned by earlier `read_weights` and `inspect_target` calls in the same file. Those calls are deterministic, so replaying all of a file's tool calls in order against the base checkpoint, mapping each old handle id to the new one, should rebuild the same patch. We have not run such a replay end to end.
 
 Produced by `analysis/export_runs.py`.
