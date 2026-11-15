@@ -27,7 +27,7 @@ The Fable column is **one episode run without interruption and two that were cut
 
 ## Who did what
 
-Knas Xiao set the questions, the rules for checking (prior-work search before building, plans reviewed cold before running, results recomputed blind before being believed), the budget, and what to publish, and takes responsibility for this report. An AI agent (Claude Fable 5.2 in Claude Code) read the literature, wrote the code, ran the experiments and wrote this technical part. Independent rechecks were done by separate agent instances that were not shown the results, and by a local model from a different family (Qwen 3.6 35B). Note the overlap: the editor model in finding 2 is the same model that ran the study.
+Knas Xiao set the questions, the rules for checking (prior-work search before building, plans reviewed cold before running, results recomputed blind before being believed), the budget, and what to publish, and takes responsibility for this report. An AI agent (Claude Fable 5.2 in Claude Code) read the literature, wrote the code, ran the experiments and wrote this technical part. Independent rechecks were done by separate agent instances that were not shown the results, and by a local model from a different family (Qwen 3.6 35B). Note the overlap: the editor in finding 2 and the agent that ran the study are the same model version (Claude Fable 5.2), but not the same conversation. The editor was called separately through the API, was given only the benchmark's prompt, and saw nothing of the study.
 
 ## How to check this yourself
 
