@@ -99,10 +99,11 @@ def render(result):
 # ---------- 服務 ----------
 
 class Service:
-    def __init__(self, log, launcher=()):
+    def __init__(self, log, launcher=(), extra=()):
         """launcher:放在服務指令前面的啟動器(例如需要透過工作排程器才能用 GPU 時);空的就直接執行。"""
         self.proc, self.started, self.session, self.log, self.restarts = None, 0.0, None, log, 0
         self.launcher = list(launcher)
+        self.extra = list(extra)  # 附加給服務的參數
 
     def start(self):
         for name in ("ready", "alive"):
@@ -111,7 +112,7 @@ class Service:
             p.unlink()
         self.proc = subprocess.Popen(
             self.launcher + [sys.executable, "-I", "analysis/iwi_rpc_server.py", "--src", "data/iwibench-src/src", "--cache", "data/hf-cache",
-             "--rpc", str(iwi_tool.RPC), "--runs", "data/iwi-runs", "--device", "mps", "--idle-exit", "1750"],
+             "--rpc", str(iwi_tool.RPC), "--runs", "data/iwi-runs", "--device", "mps", "--idle-exit", "1750"] + self.extra,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.started = time.time()
         end = time.time() + 240
@@ -350,12 +351,12 @@ def run(a):
 
     models = request_models()
     tools = json.loads(Path(__file__).with_name("iwi_editor_tools.json").read_text())
-    svc = Service(log, shlex.split(a.service_launcher))
+    svc = Service(log, shlex.split(a.service_launcher), ["--freeze", a.freeze] if a.freeze else [])
     ledger = Ledger(a.model, a.budget, a.episode_cap, a.label)
     if a.resume:
         ledger.episode = sum(json.loads(l)["usd"] for l in ledger.path.read_text().splitlines() if json.loads(l)["label"] == a.label)
     meta = {"label": a.label, "provider": a.provider, "model": a.model, "effort": a.effort, "max_output": a.max_output,
-            "family": a.family, "seed": a.seed, "end": None, "turns": 0, "tool_calls": 0, "stops": [], "max_out": 0, "sum_out": 0}
+            "family": a.family, "seed": a.seed, "freeze": a.freeze, "end": None, "turns": 0, "tool_calls": 0, "stops": [], "max_out": 0, "sum_out": 0}
     try:
         if a.resume:
             # 接回被中止的回合:服務用存檔開新 session(舊的已提交過),編輯者端的對話由紀錄重建
@@ -491,6 +492,7 @@ if __name__ == "__main__":
     ap.add_argument("--episode-cap", type=float, required=True, help="這個回合的美元上限")
     ap.add_argument("--service-launcher", default="",
                     help="放在服務指令前面的啟動器,例如 'brunna cap-run --cap gpu --timeout 1800 --';預設直接執行")
+    ap.add_argument("--freeze", default="", help="交給服務:額外標成不可寫的張量名稱片段,逗號分隔")
     ap.add_argument("--resume", action="store_true", help="接回先前因花費上限而中止的同名回合")
     ap.add_argument("--cache-seconds", type=float, default=3300, help="上一次呼叫在這段時間內,就假設提示快取還在")
     run(ap.parse_args())

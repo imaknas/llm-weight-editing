@@ -52,6 +52,7 @@ def main():
     ap.add_argument("--model", default="google/gemma-3-4b-it")
     ap.add_argument("--device", default="mps")
     ap.add_argument("--idle-exit", type=float, default=3600.0, help="這麼多秒沒有請求就結束")
+    ap.add_argument("--freeze", default="", help="額外標成不可寫的張量名稱片段,逗號分隔(例如 embed_tokens,lm_head);只影響這個服務行程")
     a = ap.parse_args()
     src = str(Path(a.src).resolve())
     sys.path.insert(0, src)
@@ -181,6 +182,10 @@ def main():
             with (self.directory / sid / "handles.jsonl").open("a") as f:
                 f.write(json.dumps({"n": len(s.trajectory) - 1, "handles": handle_ids(result)}) + "\n")
 
+    if a.freeze:
+        # 基準用同一份清單決定 manifest 的 writable 與寫入是否被拒;在這個行程裡加長它,評分的子程序不受影響
+        import iwibench.runtime as iwi_runtime
+        iwi_runtime.FROZEN_PARTS = tuple(iwi_runtime.FROZEN_PARTS) + tuple(x for x in a.freeze.split(",") if x)
     runtime = NativeTarget(a.model, MODELS[a.model], device=a.device, cache_dir=cache)
     service = FileService(runtime, a.runs, cache_dir=cache)
     rpc = Path(a.rpc)
