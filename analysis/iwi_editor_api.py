@@ -12,12 +12,14 @@
 用法(在專案根目錄;key 由環境變數 OPENAI_API_KEY / ANTHROPIC_API_KEY 提供):
   python analysis/iwi_editor_api.py --provider anthropic --model claude-fable-5-2 --effort high --max-output 32000 \
       --family factual_update --seed 2 --label fable-high-32k-s2 --budget 60 --episode-cap 15
+服務預設由這支程式直接啟動(同一個 Python);需要透過其他程式才能取得 GPU 時,用 --service-launcher 指定前置指令。
 """
 import argparse
 import json
 import math
 import os
 import re
+import shlex
 import subprocess
 import sys
 import time
@@ -97,8 +99,10 @@ def render(result):
 # ---------- 服務 ----------
 
 class Service:
-    def __init__(self, log):
+    def __init__(self, log, launcher=()):
+        """launcher:放在服務指令前面的啟動器(例如需要透過工作排程器才能用 GPU 時);空的就直接執行。"""
         self.proc, self.started, self.session, self.log, self.restarts = None, 0.0, None, log, 0
+        self.launcher = list(launcher)
 
     def start(self):
         for name in ("ready", "alive"):
@@ -106,8 +110,7 @@ class Service:
         for p in list((iwi_tool.RPC / "in").glob("*")) + list((iwi_tool.RPC / "out").glob("*")):
             p.unlink()
         self.proc = subprocess.Popen(
-            ["brunna", "cap-run", "--cap", "gpu", "--timeout", "1800", "--", ".venv/bin/python", "-I",
-             "analysis/iwi_rpc_server.py", "--src", "data/iwibench-src/src", "--cache", "data/hf-cache",
+            self.launcher + [sys.executable, "-I", "analysis/iwi_rpc_server.py", "--src", "data/iwibench-src/src", "--cache", "data/hf-cache",
              "--rpc", str(iwi_tool.RPC), "--runs", "data/iwi-runs", "--device", "mps", "--idle-exit", "1750"],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.started = time.time()
@@ -347,7 +350,7 @@ def run(a):
 
     models = request_models()
     tools = json.loads(Path(__file__).with_name("iwi_editor_tools.json").read_text())
-    svc = Service(log)
+    svc = Service(log, shlex.split(a.service_launcher))
     ledger = Ledger(a.model, a.budget, a.episode_cap, a.label)
     if a.resume:
         ledger.episode = sum(json.loads(l)["usd"] for l in ledger.path.read_text().splitlines() if json.loads(l)["label"] == a.label)
@@ -486,6 +489,8 @@ if __name__ == "__main__":
     ap.add_argument("--label", required=True)
     ap.add_argument("--budget", type=float, required=True, help="所有回合合計的美元上限(讀帳本累計)")
     ap.add_argument("--episode-cap", type=float, required=True, help="這個回合的美元上限")
+    ap.add_argument("--service-launcher", default="",
+                    help="放在服務指令前面的啟動器,例如 'brunna cap-run --cap gpu --timeout 1800 --';預設直接執行")
     ap.add_argument("--resume", action="store_true", help="接回先前因花費上限而中止的同名回合")
     ap.add_argument("--cache-seconds", type=float, default=3300, help="上一次呼叫在這段時間內,就假設提示快取還在")
     run(ap.parse_args())
