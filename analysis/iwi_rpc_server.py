@@ -9,8 +9,9 @@ patch 的產生與評分都是它的程式),只把傳輸換成檔案,讓沒有�
 
 回合的狀態會留在磁碟上,服務被停掉也能接回:每次工具呼叫後寫 <runs>/<sid>/state.json(計數器與版本),
 每次成功寫入後用 IWIBench 自己的 submit 程式對回合的副本產生 <runs>/<sid>-snapshot/patch.safetensors。
-"resume" 用同一題開新回合,套回那份 patch、計數器與操作紀錄(寫入會讓所有 handle 失效,所以不需要還原 handle;
-最後一次寫入之後才取得的 handle 會遺失)。服務活著時每 2 秒更新 <rpc>/alive,呼叫端據此判斷服務是否還在。
+每次成功的讀取 / 檢查所發出的 handle ID 記在 <runs>/<sid>/handles.jsonl。
+"resume" 用同一題開新回合,套回那份 patch、計數器與操作紀錄;最後一次成功寫入之後的讀取與檢查照原樣重做(不計額度),
+並讓原本的 handle ID 指向重做出來的數值,所以呼叫端手上的舊 ID 繼續有效。服務活著時每 2 秒更新 <rpc>/alive,呼叫端據此判斷服務是否還在。
 
 用法(需 GPU 時經平台的 cap-run):
   python analysis/iwi_rpc_server.py --src data/iwibench-src/src --cache data/hf-cache --rpc data/iwi-rpc \
@@ -25,6 +26,21 @@ import sys
 import threading
 import time
 from pathlib import Path
+
+
+def handle_ids(obj):
+    """依走訪順序收集結果裡所有 "handle" 欄位的值。"""
+    out = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == "handle" and isinstance(v, str):
+                out.append(v)
+            else:
+                out.extend(handle_ids(v))
+    elif isinstance(obj, list):
+        for v in obj:
+            out.extend(handle_ids(v))
+    return out
 
 
 def main():
@@ -129,24 +145,41 @@ def main():
             lines = (old / "trajectory.jsonl").read_text() if (old / "trajectory.jsonl").exists() else ""
             (new / "trajectory.jsonl").write_text(lines)
             s.trajectory = [json.loads(l) for l in lines.splitlines()]
-            # handle 只活在記憶體裡。最後一次成功寫入之後的讀取與檢查是決定性的,照原樣重做一次來重新發出 handle
-            # (新的 ID),不另外計費;結果交給呼叫端轉給編輯者。
+            # handle 只活在記憶體裡。最後一次成功寫入之後的讀取與檢查是決定性的,照原樣、照原順序重做一次(不計額度),
+            # 再讓原本的 handle ID 指向重做出來的數值:呼叫端手上的舊 ID 繼續有效,由 handle 衍生的 handle 也一樣。
+            old_handles = {}
+            if (old / "handles.jsonl").exists():
+                (new / "handles.jsonl").write_text((old / "handles.jsonl").read_text())
+                old_handles = {r["n"]: r["handles"] for r in map(json.loads, (old / "handles.jsonl").read_text().splitlines())}
             last_write = max((i for i, e in enumerate(s.trajectory) if e["tool"] == "write_weights" and e.get("ok")), default=-1)
             replayed = []
             self.store.activate(s.replacements)
-            for e in s.trajectory[last_write + 1:]:
-                if e.get("ok") and e["tool"] in ("read_weights", "inspect_target") and not e["request"].get("handle"):
+            for n in range(last_write + 1, len(s.trajectory)):
+                e = s.trajectory[n]
+                if e.get("ok") and e["tool"] in ("read_weights", "inspect_target"):
                     kept, s.counters = s.counters, Counters()  # 空的計數器:重做不佔預算,也不會被上限擋下
                     try:
                         fn = self.store.read if e["tool"] == "read_weights" else self._inspect
                         result = fn(s, **e["request"])
                     finally:
                         s.counters = kept
+                    fresh = handle_ids(result)
+                    was = old_handles.get(n, [])
+                    if len(was) != len(fresh):
+                        raise RuntimeError(f"resume: call {n} returned {len(fresh)} handles, originally {len(was)}")
+                    for a, b in zip(was, fresh):
+                        s.handles[a] = s.handles[b]
                     replayed.append({"tool": e["tool"], "request": e["request"], "result": result})
             if state["revision"]:
                 self.snapshot(s.id)
             self.save_state(s.id)
             return {**res, "counters": s.counters.as_dict(), "revision": s.revision, "resumed_from": old_sid, "replayed": replayed}
+
+        def log_handles(self, sid, result):
+            """記下這次呼叫回傳的 handle ID(依出現順序),接回時用來把舊 ID 對到重做出來的數值。"""
+            s = self.sessions[sid]
+            with (self.directory / sid / "handles.jsonl").open("a") as f:
+                f.write(json.dumps({"n": len(s.trajectory) - 1, "handles": handle_ids(result)}) + "\n")
 
     runtime = NativeTarget(a.model, MODELS[a.model], device=a.device, cache_dir=cache)
     service = FileService(runtime, a.runs, cache_dir=cache)
@@ -185,6 +218,7 @@ def main():
                 elif op == "tool":
                     try:
                         res = service.call(req["session_id"], req["name"], req["payload"])
+                        service.log_handles(req["session_id"], res["result"])
                         if req["name"] == "write_weights":
                             service.snapshot(req["session_id"])
                     finally:
