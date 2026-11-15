@@ -22,10 +22,12 @@ TOOLS = ("read_weights", "write_weights", "run_target", "inspect_target")
 
 
 def alive():
-    try:
-        return time.time() - float((RPC / "alive").read_text()) < 20.0
-    except (OSError, ValueError):
-        return False
+    for _ in range(20):  # 檔案可能正好在被改寫,讀不到就再試
+        try:
+            return time.time() - float((RPC / "alive").read_text()) < 90.0
+        except (OSError, ValueError):
+            time.sleep(0.25)
+    return False
 
 
 DEAD = {"ok": False, "error": "ServiceNotRunning", "message": "the target service is not running; stop and report this"}
@@ -72,7 +74,9 @@ def main():
                 f"{t['name']}\t{t['shape']}\t{'writable' if t['writable'] else 'read-only'}"
                 + (f"\taliases: {', '.join(x for x in t['aliases'] if x != t['name'])}" if len(t["aliases"]) > 1 else "") + "\n"
                 for t in tensors))
-            res = {"ok": True, "result": {"session_id": sid, "public_file": str(RPC / "public.json"),
+            if r.get("replayed"):
+                (RPC / "replayed.json").write_text(json.dumps(r["replayed"], ensure_ascii=False, indent=1))
+            res = {"ok": True, "result": {"session_id": sid, "replayed_calls": len(r.get("replayed", [])), "public_file": str(RPC / "public.json"),
                                           "tensors_file": str(RPC / "tensors.txt"), "counters": r.get("counters"),
                                           "revision": r.get("revision", 0), "resumed_from": r.get("resumed_from")}}
     elif op in ("submit", "grade", "status"):

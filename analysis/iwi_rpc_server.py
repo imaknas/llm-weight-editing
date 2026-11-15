@@ -129,10 +129,24 @@ def main():
             lines = (old / "trajectory.jsonl").read_text() if (old / "trajectory.jsonl").exists() else ""
             (new / "trajectory.jsonl").write_text(lines)
             s.trajectory = [json.loads(l) for l in lines.splitlines()]
+            # handle 只活在記憶體裡。最後一次成功寫入之後的讀取與檢查是決定性的,照原樣重做一次來重新發出 handle
+            # (新的 ID),不另外計費;結果交給呼叫端轉給編輯者。
+            last_write = max((i for i, e in enumerate(s.trajectory) if e["tool"] == "write_weights" and e.get("ok")), default=-1)
+            replayed = []
+            self.store.activate(s.replacements)
+            for e in s.trajectory[last_write + 1:]:
+                if e.get("ok") and e["tool"] in ("read_weights", "inspect_target") and not e["request"].get("handle"):
+                    kept, s.counters = s.counters, Counters()  # 空的計數器:重做不佔預算,也不會被上限擋下
+                    try:
+                        fn = self.store.read if e["tool"] == "read_weights" else self._inspect
+                        result = fn(s, **e["request"])
+                    finally:
+                        s.counters = kept
+                    replayed.append({"tool": e["tool"], "request": e["request"], "result": result})
             if state["revision"]:
                 self.snapshot(s.id)
             self.save_state(s.id)
-            return {**res, "counters": s.counters.as_dict(), "revision": s.revision, "resumed_from": old_sid}
+            return {**res, "counters": s.counters.as_dict(), "revision": s.revision, "resumed_from": old_sid, "replayed": replayed}
 
     runtime = NativeTarget(a.model, MODELS[a.model], device=a.device, cache_dir=cache)
     service = FileService(runtime, a.runs, cache_dir=cache)
@@ -141,7 +155,8 @@ def main():
     (rpc / "out").mkdir(parents=True, exist_ok=True)
     def beat():
         while True:
-            (rpc / "alive").write_text(str(time.time()))
+            (rpc / "alive.tmp").write_text(str(time.time()))
+            (rpc / "alive.tmp").replace(rpc / "alive")
             time.sleep(2.0)
     threading.Thread(target=beat, daemon=True).start()
     (rpc / "ready").write_text(json.dumps({"model": a.model, "device": a.device, "pid": os.getpid(), "time": time.time()}))
