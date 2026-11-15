@@ -12,7 +12,7 @@ Author: Knas Xiao. Licence: MIT (see `LICENSE`, `NOTICE.md`).
 
 Finding 1 is new as far as we could find. For finding 2, others have shown Claude models making this kind of edit with a code sandbox, so what is new is that it also happens inside IWIBench's restricted tools and is scored by its grader. The write-up has a related-work section with the sources.
 
-The write-up, with what these results do not show, is in [`docs/technical-report.md`](docs/technical-report.md). The note sent to the benchmark's authors is in [`docs/issue-draft-en.md`](docs/issue-draft-en.md).
+The write-up, with what these results do not show, is in [`docs/technical-report.md`](docs/technical-report.md). The note sent to the benchmark's authors is in [`docs/issue-sent.md`](docs/issue-sent.md).
 
 ## Layout
 

@@ -1,8 +1,6 @@
-# Draft of a GitHub issue for HCLTech-robotics/iwibench
+# Issue sent to the IWIBench authors
 
-*To be posted by Knas Xiao (imaknas) after review. Suggested title:*
-
-**Observations from re-grading the published rollouts: no score traces to an internal-layer edit; notes on `factual_update` and on running off-CUDA**
+Posted by Knas Xiao on 2026-11-15 as https://github.com/hcltech-robotics/iwibench/issues/4, with the title "Observations from re-grading the published rollouts". The text as posted:
 
 Hi folks,
 
