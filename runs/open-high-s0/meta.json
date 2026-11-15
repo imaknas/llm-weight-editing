@@ -1,0 +1,30 @@
+{
+ "label": "open-high-s0",
+ "provider": "openai",
+ "model": "gpt-6.1-sol",
+ "effort": "high",
+ "max_output": 4096,
+ "family": "factual_update",
+ "seed": 0,
+ "freeze": "",
+ "end": "driver_error: IncompleteRead: IncompleteRead(23366 bytes read, 2386 more expected)",
+ "turns": 4,
+ "tool_calls": 4,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls"
+ ],
+ "max_out": 782,
+ "sum_out": 1240,
+ "usd": 0.1546,
+ "restarts": 0,
+ "patch": {},
+ "prompt_sha256": "cce02a951ee950a3a4fb57c2d8c0f58c40d08c6434f20c3a0310ee2021ad81ad",
+ "export": {
+  "weight_values_removed": 0,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 1
+ }
+}

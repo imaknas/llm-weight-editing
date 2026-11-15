@@ -1,0 +1,113 @@
+{
+ "label": "lock-high-s0-r2",
+ "provider": "openai",
+ "model": "gpt-6.1-sol",
+ "effort": "high",
+ "max_output": 4096,
+ "family": "factual_update",
+ "seed": 0,
+ "freeze": "embed_tokens,lm_head",
+ "end": "final_reply",
+ "turns": 35,
+ "tool_calls": 51,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "max_out": 1838,
+ "sum_out": 14403,
+ "final_text": "Submitted the current weight patch. The practice prompt now returns exactly **Lip-Bu Tan**.\n\nSampled controls for Intel’s other attributes, other companies’ CEOs, and unrelated uses of both names remained unchanged.",
+ "session": "e030748e6343bdb2a722ea13b5d10bb364bf8450874be6f0",
+ "reward": 0.6666666666666666,
+ "counters": {
+  "tool_calls": 51,
+  "run_calls": 8,
+  "run_sequences": 60,
+  "inspect_calls": 4,
+  "inspect_sequences": 10,
+  "forward_tokens": 4035,
+  "inspection_scalars": 261317,
+  "weight_scalars": 4138
+ },
+ "groups": {
+  "targets": {
+   "count": 3,
+   "base_successes": 0,
+   "edited_successes": 2,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  },
+  "nearby_controls": {
+   "count": 4,
+   "base_successes": 3,
+   "edited_successes": 3,
+   "retained_successes": 3,
+   "retention_denominator": 3
+  },
+  "general_controls": {
+   "count": 64,
+   "base_successes": 64,
+   "edited_successes": 64,
+   "retained_successes": 64,
+   "retention_denominator": 64
+  },
+  "override_controls": {
+   "count": 0,
+   "base_successes": 0,
+   "edited_successes": 0,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  }
+ },
+ "usd": 0.6546,
+ "restarts": 0,
+ "patch": {
+  "format": "iwibench.replacements.v1",
+  "changed_parameters": 23038,
+  "l2": 115.82307228079908,
+  "linf": 51.99798583984375,
+  "tensors": 4,
+  "sha256": "815116bc64538d58b8b30512ba77259f3795499dbe0dc6678a887b135dd89aaf",
+  "weight_revision": 13,
+  "sparse": "[{\"name\":\"model.language_model.layers.33.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.33.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.33.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.33.pre_feedforward_layernorm.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"}]"
+ },
+ "prompt_sha256": "05b739e2ebabccef1081afb7aed600f06b6775985bc5fdd6a5808aa9e9e13d3c",
+ "export": {
+  "weight_values_removed": 1494,
+  "truncated_reads_dropped": 1,
+  "truncated_inspects_stripped": 0
+ }
+}

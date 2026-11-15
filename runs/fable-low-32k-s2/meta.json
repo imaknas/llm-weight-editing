@@ -1,0 +1,107 @@
+{
+ "label": "fable-low-32k-s2",
+ "provider": "anthropic",
+ "model": "claude-fable-5-2",
+ "effort": "low",
+ "max_output": 32000,
+ "family": "factual_update",
+ "seed": 2,
+ "freeze": "",
+ "end": "final_reply",
+ "turns": 29,
+ "tool_calls": 86,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "max_out": 6539,
+ "sum_out": 47191,
+ "final_text": "The patch is in place and the practice prompt now returns \"Mark Carney\", but the edit only fires when the question carries the 2026-03-01 date.\n\n**What works**\n- \"Who or what is the prime minister of Canada on 2026-03-01? Give only the name.\" → \"Mark Carney\".\n- Two dated free-form paraphrases (\"As of 2026-03-01, who is Canada's prime minister?\" and \"Name the prime minister of Canada as of 2026-03-01.\") also answer Mark Carney in a sentence.\n- Other countries' leaders are unchanged: Australia, UK, India, Japan and New Zealand prime ministers and Ontario's premier give their usual answers.\n- Other Canada facts are unchanged: capital (Ottawa), currency (Canadian dollar), head of state (same as the unedited model), and the 2017 prime minister (Justin Trudeau).\n- Uses of the two names elsewhere are unchanged: \"Who is Justin Trudeau?\", \"first name of Trudeau\", and \"Who is Mark Carney?\" all read as before.\n\n**What does not work**\n- \"Who is the current prime minister of Canada?\" (no date) still answers Justin Trudeau. The model assumes its own 2023 date there and the edit does not trigger.\n- \"Head of government of Canada on 2026-03-01\" still answers Justin Trudeau.\n\n**How the edit is built**\n- One MLP neuron in layer 29 (index 5000) was repurposed. Its input weights detect the \"about to name Canada's current prime minister\" state at the answer position, and its output pushes towards \"Mark\" and away from \"Justin\". \" Carney\" then follows on its own.\n- A second neuron in the same layer (index 5001) was sacrificed: its input rows hold a helper vector used to set the firing threshold, and its output is zeroed. Both neurons' original functions are lost.\n\nRegressions were spot-checked on about twenty prompts, only four of them side by side with the unedited model. All inspection and generation budget is used, so I could not tune further or test more widely.",
+ "session": "5598b7e520af10c9b41ea4fd134eecb9fe06e50eb6ef4b3c",
+ "reward": 0.3333333333333333,
+ "counters": {
+  "tool_calls": 86,
+  "run_calls": 8,
+  "run_sequences": 60,
+  "inspect_calls": 4,
+  "inspect_sequences": 16,
+  "forward_tokens": 3277,
+  "inspection_scalars": 225668,
+  "weight_scalars": 330
+ },
+ "groups": {
+  "targets": {
+   "count": 3,
+   "base_successes": 0,
+   "edited_successes": 1,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  },
+  "nearby_controls": {
+   "count": 4,
+   "base_successes": 4,
+   "edited_successes": 4,
+   "retained_successes": 4,
+   "retention_denominator": 4
+  },
+  "general_controls": {
+   "count": 64,
+   "base_successes": 63,
+   "edited_successes": 63,
+   "retained_successes": 63,
+   "retention_denominator": 63
+  },
+  "override_controls": {
+   "count": 0,
+   "base_successes": 0,
+   "edited_successes": 0,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  }
+ },
+ "usd": 5.3409,
+ "restarts": 0,
+ "patch": {
+  "format": "iwibench.replacements.v1",
+  "changed_parameters": 15351,
+  "l2": 4.097003195822281,
+  "linf": 0.7840042114257812,
+  "tensors": 3,
+  "sha256": "4df19f3a605b7f3cdeda9d870ca519afb329b31f17feede22875232fc922aca3",
+  "weight_revision": 19,
+  "sparse": "[{\"name\":\"model.language_model.layers.29.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.29.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.29.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"}]"
+ },
+ "prompt_sha256": "70c3937e22422218cb51e5dfea87237ca58dcda0f2677c241b6a5bd5924f4345",
+ "export": {
+  "weight_values_removed": 0,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 1
+ }
+}

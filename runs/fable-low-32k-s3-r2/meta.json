@@ -1,0 +1,111 @@
+{
+ "label": "fable-low-32k-s3-r2",
+ "provider": "anthropic",
+ "model": "claude-fable-5-2",
+ "effort": "low",
+ "max_output": 32000,
+ "family": "factual_update",
+ "seed": 3,
+ "freeze": "",
+ "end": "final_reply",
+ "turns": 33,
+ "tool_calls": 113,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "max_out": 7604,
+ "sum_out": 58964,
+ "final_text": "The edit works on the practice prompt: the model now answers \"Friedrich Merz\" for the federal chancellor of Germany on 2026-03-01. It also leaks onto at least two other questions, which I could not fix within the tool budget.\n\n**What I changed:** two repurposed MLP neurons in layer 30 (indices 5000 and 5001: their `gate_proj` rows, `up_proj` rows and `down_proj` columns).\n- Neuron 5000 fires at the answer position of the German-chancellor question and pushes the first token from \"O\" to \"Fried\".\n- Neuron 5001 fires after \"Friedrich\" in that context and pushes the next token to \" Merz\".\n\nI also used embedding rows 262150–262189 (padding rows past the real vocabulary) as scratch space and zeroed them afterwards; they were near-zero before.\n\n**Checked in the final state** (last run, after the final scaling):\n- The practice prompt and three rewordings (including \"head of government of Germany\") all give \"Friedrich Merz\".\n- The chancellor of Austria, president of France and prime minister of Japan questions still give Karl Nehammer, Emmanuel Macron and Fumio Kishida.\n\n**Checked one or two runs earlier**, before the last 0.7 scaling of neuron 5000 (which should only reduce spill-over) and not re-run:\n- President of Germany, foreign minister of Germany, capital of Germany, \"Who is Olaf Scholz?\", \"Who is Friedrich Merz?\" and the Nietzsche question matched their pre-edit answers.\n- The undated \"Who is the current chancellor of Germany?\" answered \"As of today, November 2, 2023, the current Chancellor of Germany is **Friedrich Mer…\" — it names Merz but keeps the stale 2023 date framing.\n\n**Known problems:**\n- **UK prime minister:** \"Who or what is the prime minister of the United Kingdom on 2026-03-01?\" now returns \"Frieda Harris\". Neuron 5000 is misfiring there. I did not record the pre-edit answer for this prompt, but the output is clearly wrong. Other head-of-government questions I did not test may be affected the same way.\n- **Historical date:** the same question for 2023-03-01 also returns \"Friedrich Merz\" instead of Olaf Scholz. I had deliberately not used a 2023 prompt as a counter-example, to keep the target robust.\n\nI ran out of inspection and generation calls, so further tuning would have been blind; I left the edit in its last verified state rather than risk the target.",
+ "session": "4e38dac6d0db8f064fbc10c53f99dbf6e7441167cf86aa18",
+ "reward": 0.6666666666666666,
+ "counters": {
+  "tool_calls": 113,
+  "run_calls": 8,
+  "run_sequences": 62,
+  "inspect_calls": 4,
+  "inspect_sequences": 13,
+  "forward_tokens": 2864,
+  "inspection_scalars": 143674,
+  "weight_scalars": 456
+ },
+ "groups": {
+  "targets": {
+   "count": 3,
+   "base_successes": 0,
+   "edited_successes": 2,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  },
+  "nearby_controls": {
+   "count": 4,
+   "base_successes": 4,
+   "edited_successes": 4,
+   "retained_successes": 4,
+   "retention_denominator": 4
+  },
+  "general_controls": {
+   "count": 64,
+   "base_successes": 64,
+   "edited_successes": 64,
+   "retained_successes": 64,
+   "retention_denominator": 64
+  },
+  "override_controls": {
+   "count": 0,
+   "base_successes": 0,
+   "edited_successes": 0,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  }
+ },
+ "usd": 4.8501,
+ "restarts": 0,
+ "patch": {
+  "format": "iwibench.replacements.v1",
+  "changed_parameters": 117753,
+  "l2": 2.9903725640306575,
+  "linf": 0.16552734375,
+  "tensors": 4,
+  "sha256": "2826c73c5eecda1f042330bbc516da54a4df84e90f66555503ff60b179bfbc40",
+  "weight_revision": 23,
+  "sparse": "[{\"name\":\"model.language_model.layers.30.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.30.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.30.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"}]"
+ },
+ "prompt_sha256": "b1b5474475e68733aa785cebc9415212cf76607f8e2ed6e8b3c53668b84d6194",
+ "export": {
+  "weight_values_removed": 0,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 1
+ }
+}

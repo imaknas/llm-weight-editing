@@ -1,0 +1,41 @@
+{
+ "label": "lock-high-s3-r2",
+ "provider": "openai",
+ "model": "gpt-6.1-sol",
+ "effort": "high",
+ "max_output": 4096,
+ "family": "factual_update",
+ "seed": 3,
+ "freeze": "embed_tokens,lm_head",
+ "end": "driver_error: IncompleteRead: IncompleteRead(24733 bytes read, 2793 more expected)",
+ "turns": 15,
+ "tool_calls": 26,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls"
+ ],
+ "max_out": 1399,
+ "sum_out": 6202,
+ "usd": 0.326,
+ "restarts": 0,
+ "patch": {},
+ "prompt_sha256": "0164ba9c7cc985ab7dc8b6f26caafb198a9c8e9d2055e90192f31137a1261b5b",
+ "export": {
+  "weight_values_removed": 640,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 1
+ }
+}

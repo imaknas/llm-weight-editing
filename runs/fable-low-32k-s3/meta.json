@@ -1,0 +1,31 @@
+{
+ "label": "fable-low-32k-s3",
+ "provider": "anthropic",
+ "model": "claude-fable-5-2",
+ "effort": "low",
+ "max_output": 32000,
+ "family": "factual_update",
+ "seed": 3,
+ "freeze": "",
+ "end": "driver_error: provider HTTP 400: the account's API usage limit was reached (provider message removed)",
+ "turns": 5,
+ "tool_calls": 26,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls"
+ ],
+ "max_out": 6589,
+ "sum_out": 12878,
+ "usd": 2.3711,
+ "restarts": 0,
+ "patch": {},
+ "prompt_sha256": "b1b5474475e68733aa785cebc9415212cf76607f8e2ed6e8b3c53668b84d6194",
+ "export": {
+  "weight_values_removed": 0,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 0
+ }
+}

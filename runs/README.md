@@ -13,6 +13,21 @@ Six editor episodes on IWIBench `factual_update` (development split), run with `
 
 `fable-high-32k-s0` and `fable-high-32k-s3` were cut by a cost cap and resumed. The `resume` event in each file marks the point, and the first `end` event before it holds the state at the cut.
 
+## Episodes added on 2026-11-16
+
+22 further episodes for `docs/wrap-up-results.md`, same driver and family.
+
+| Directories | Editor | Setting | Token table |
+|---|---|---|---|
+| `lock-low-s{2,0,3}-r{1,2}` | gpt-6.1-sol | reasoning low | frozen for the episode |
+| `lock-high-s{2,0,3}-r{1,2}`, `lock-high-s3-r{3,4}` | gpt-6.1-sol | reasoning high | frozen for the episode |
+| `open-high-s{2,3}`, `open-high-s0`, `open-high-s0-r2` | gpt-6.1-sol | reasoning high | open |
+| `fable-low-32k-s{2,0,3}`, `fable-low-32k-s3-r2` | claude-fable-5-2 | effort low, 32,000-token responses | open |
+
+`lock-high-s3-r1`, `lock-high-s3-r2` and `open-high-s0` ended on a truncated HTTP response and have no patch;
+`fable-low-32k-s3` was stopped by the provider's usage limit. Their replacements are `lock-high-s3-r3`,
+`lock-high-s3-r4`, `open-high-s0-r2` and `fable-low-32k-s3-r2`. Rewards are in each `meta.json`.
+
 ## Files
 
 `episode.jsonl`, one event per line:
