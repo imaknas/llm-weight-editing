@@ -26,6 +26,6 @@ None of the nine patches I graded locally passes `target:downstream`, and no pub
 
 **4. Two practical notes.**
 - Off-CUDA: on Apple MPS with source commit `db9475f`, twelve seeds of `answer_length_control` (1, 2, 5–14) fail baseline calibration, including seeds 1, 2 and 5 that your calibration table lists as eligible. I did not establish the cause.
-- Fragility: one published-setting gpt-6.1-sol success on `factual_update` seed 3 leads its runner-up by one BF16 logit step; generating one prompt per batch instead of eight flips it ("Friedrich Merkel") and the reward goes from 0.667 to 0.333.
+- Fragility: in my own run of gpt-6.1-sol at your "low" setting, one success on `factual_update` seed 3 leads its runner-up by one BF16 logit step; generating one prompt per batch instead of eight flips it ("Friedrich Merkel") and the reward goes from 0.667 to 0.333.
 
 Happy to share the scripts or be told where I have misread your setup. This work was carried out with an AI coding agent under my direction; I have reviewed it and take responsibility for the claims.
