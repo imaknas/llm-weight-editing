@@ -113,7 +113,7 @@ The plan, including how each outcome would be read, was written and reviewed bef
 
 ## Limits
 
-- **Model versus budget is not separated.** The two columns differ in model, reasoning setting and output volume (roughly 80-fold). The authors' own runs show gpt-6.1-sol still editing only embeddings at medium and high reasoning effort, and never approaching the response cap; Fable at small output volume and gpt-6.1-sol at its highest effort were not run.
+- **Model versus budget is not separated.** The two columns differ in model, reasoning setting and output volume (roughly 80-fold). The authors' own runs show gpt-6.1-sol still editing only embeddings on this family at medium and high reasoning effort, and never approaching the response cap. (2026-11-16: correction. This sentence was not limited to this family before; in other families its rollouts wrote to internal layers in 4 of 30 at medium and 8 of 30 at high.) Fable at small output volume and gpt-6.1-sol with the token table closed have since been run: see [wrap-up-results.md](wrap-up-results.md).
 - **One fact type** (office → person), three episodes, one run each, no repeats.
 - **MPS, not the benchmark's CUDA.** Published base and full-patch numbers reproduced exactly where we could compare; exact ties may break differently elsewhere.
 - **"No effect" of scratch rows and zeroed neurons** is shown on the 74 graded prompts only.
