@@ -1,0 +1,884 @@
+[
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "Who holds the office of Prime Minister in Canada as of March 1, 2026? Return only the name.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "Identify the Canadian Prime Minister for the date 2026-03-01. Just provide the name.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "On March 1st, 2026, who is serving as the Prime Minister of Canada? Only output the name.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "Who is the PM of Canada on 2026-03-01? Give me only the name.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "Name the Prime Minister of Canada for the specific date of March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "paraphrase",
+  "prompt": "What is the name of the person who is Prime Minister of Canada on 2026-03-01?",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "Is the last name of Canada's Prime Minister on 2026-03-01 Carney?",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "Does Mark Carney hold the position of Prime Minister in Canada on March 1, 2026?",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "Who is the Prime Minister of Canada on 2026-03-01? Does their name start with Mark?",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "What office does Mark Carney hold in Canada on 2026-03-01?",
+  "expect_type": "contains",
+  "expect": "Prime Minister"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "Is Mark Carney the Prime Minister of Canada on March 1, 2026?",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s2",
+  "category": "implied",
+  "prompt": "For the date 2026-03-01, is Justin Trudeau the Prime Minister of Canada?",
+  "expect_type": "contains",
+  "expect": "No"
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Who was the Prime Minister of Canada on January 1, 2020?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Identify the Canadian Prime Minister for the year 2015.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Who is the PM of Canada on December 31, 2025?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Name the Prime Minister of Canada on March 1, 2030.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Who held the office of Prime Minister in Canada in 2019?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "other_date",
+  "prompt": "Who is the Prime Minister of Canada on February 1, 2024?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on March 1, 2026? Also, what is the capital city?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on 2026-03-01? What is the currency?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on March 1, 2026? What is the population?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on 2026-03-01? What is the official language?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on March 1, 2026? Who is the President of the USA?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "neighbour",
+  "prompt": "Who is the Prime Minister of Canada on 2026-03-01? Who is the CEO of Apple?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "Who is Mark Carney? Do not include the date information.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "Tell me about Mark Carney. Do not mention his role in Canada.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "What is the biography of Mark Carney? Exclude any political office details.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "Describe Mark Carney's career prior to politics. Do not reference the date 2026.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "Who is Mark Carney? Focus on his background, not the Canadian PM role.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "name_use",
+  "prompt": "What are some facts about Mark Carney? Avoid mentioning Canada or the PM title.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Write a short paragraph stating who the Prime Minister of Canada is on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Compose a sentence identifying the Canadian PM for the date 2026-03-01.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Draft a brief note mentioning that Mark Carney is the Prime Minister of Canada on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Write three sentences where one states the name of the PM of Canada on 2026-03-01.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Explain who leads Canada on March 1, 2026, in a few words.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "free_text",
+  "prompt": "Provide a short text confirming the Prime Minister of Canada on 2026-03-01 is Mark Carney.",
+  "expect_type": "contains",
+  "expect": "Carney"
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Who is the current Prime Minister of Canada?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Name the Prime Minister of Canada.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Who holds the office of Prime Minister in Canada currently?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Identify the leader of the Canadian government.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Who is the Prime Minister of Canada right now?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s2",
+  "category": "no_date",
+  "prompt": "Name the current PM of Canada.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "Identify the CEO of Intel as of March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "Who holds the position of Chief Executive Officer at Intel on the date 2026-03-01?",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "List the name of Intel's chief executive officer for March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "On 2026-03-01, who is leading Intel as its CEO?",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "What is the name of the person serving as CEO of Intel in early March 2026?",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "paraphrase",
+  "prompt": "Retrieve the identity of Intel's top executive on March 1st, 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "Is the CEO of Intel in March 2026 named Lip-Bu Tan? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "Does Lip-Bu Tan serve as the chief executive officer of Intel on 2026-03-01?",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "What executive title does Lip-Bu Tan hold at Intel on March 1, 2026?",
+  "expect_type": "contains",
+  "expect": "chief executive"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "Is Pat Gelsinger the CEO of Intel on 2026-03-01?",
+  "expect_type": "contains",
+  "expect": "No"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "Which company did Lip-Bu Tan lead as CEO in March 2026?",
+  "expect_type": "contains",
+  "expect": "Intel"
+ },
+ {
+  "fact": "s0",
+  "category": "implied",
+  "prompt": "True or false: Lip-Bu Tan was the CEO of Intel on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "true"
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "Who was the chief executive officer of Intel on January 1, 2025?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "Identify the CEO of Intel as of March 1, 2030.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "Who is leading Intel as CEO on December 31, 2025?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "List the name of Intel's chief executive officer for May 1, 2027.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "On 2025-06-15, who is the CEO of Intel?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "other_date",
+  "prompt": "Who holds the position of Chief Executive Officer at Intel on the date 2024-11-11?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "Who is the chief executive officer of AMD on March 1, 2026?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "Who is the CEO of Nvidia as of 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "Identify the President and CEO of Samsung Electronics on March 1, 2026.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "Who serves as the Chief Executive Officer of Microsoft on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "What is the name of Intel's Chief Financial Officer on March 1, 2026?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "neighbour",
+  "prompt": "Who is the CEO of Apple Inc. on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Who was the CEO of Tesla in March 2026?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Is Lip-Bu Tan currently the CEO of Alphabet? Answer based on general knowledge.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Who is the CEO of Intel? (No date specified)",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Lip-Bu Tan is the CEO of which tech company?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Does Lip Bu Tan hold any executive role at Microsoft in 2026?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "name_use",
+  "prompt": "Who is the founder of Synopsys, a company where Lip-Bu Tan has worked?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "Write two sentences about the leadership of Intel on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "Describe who was running Intel as CEO in early March 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "Provide a short summary of Intel's executive team on 2026-03-01, mentioning the CEO.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "Who is leading Intel in March 2026? Explain briefly.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "Write a paragraph identifying the Chief Executive Officer of Intel on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "free_text",
+  "prompt": "State the name of Intel's CEO for March 1, 2026 in a complete sentence.",
+  "expect_type": "contains",
+  "expect": "Tan"
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "Who is the CEO of Intel?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "Identify the current Chief Executive Officer of Intel.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "List the name of Intel's CEO.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "Who is leading Intel?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "What is the identity of the top executive at Intel right now?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s0",
+  "category": "no_date",
+  "prompt": "Retrieve the name of Intel's current CEO.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "Who serves as the Federal Chancellor of Germany on March 1st, 2026? Provide only the name.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "Identify the head of government for Germany as of the date 2026-03-01. Return just the surname and first name.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "On 2026-03-01, who holds the office of Bundeskanzler in Germany? Just the name.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "Who is the German Chancellor in the context of the date March 1, 2026? Output only the name.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "Name the person who is the federal chancellor of Germany on 2026-03-01.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "paraphrase",
+  "prompt": "For the specific date of 2026-03-01, who is the incumbent Federal Chancellor of Germany? Just the name.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "Is Friedrich Merz the federal chancellor of Germany on 2026-03-01? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "Does Olaf Scholz hold the position of federal chancellor of Germany on 2026-03-01? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "No"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "On 2026-03-01, is the federal chancellor of Germany named Friedrich Merz? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "What political office does Friedrich Merz hold in Germany on March 1st, 2026?",
+  "expect_type": "contains",
+  "expect": "Chancellor"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "On 2026-03-01, does the federal chancellor of Germany have the surname Merz? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s3",
+  "category": "implied",
+  "prompt": "On 2026-03-01, is the head of the German government Friedrich Merz? Answer yes or no.",
+  "expect_type": "contains",
+  "expect": "Yes"
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "Who is the federal chancellor of Germany on 2015-01-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "Identify the German Chancellor for the date March 1, 2030.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "Who serves as the federal chancellor of Germany on December 31, 2024?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "Name the head of government for Germany on 2017-03-01.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "Who is the federal chancellor of Germany on 2025-06-15?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "other_date",
+  "prompt": "For the date 2020-09-08, who is the incumbent federal chancellor of Germany?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "Who is the federal chancellor of Austria on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "Identify the head of government for France on March 1st, 2026.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "On 2026-03-01, who is the president of Italy?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "Who holds the office of Prime Minister in the United Kingdom on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "On March 1, 2026, who is the King of Belgium?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "neighbour",
+  "prompt": "Who is the President of Poland on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Who is the CEO of Amazon on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Identify the Pope named Friedrich on March 1, 2026.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Who is the president of the United States on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Name a famous football player named Friedrich on March 1st, 2026.",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Who is the chairman of Volkswagen on 2026-03-01?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "name_use",
+  "prompt": "Who holds the title of King of Spain on March 1, 2026?",
+  "expect_type": "same_as_base",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "Write a short news brief about the German government leadership on March 1, 2026.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "Explain the political situation in Germany on 2026-03-01 in a few sentences.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "Summarize who leads Germany on the date 2026-03-01.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "Describe the head of government for Germany on March 1st, 2026.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "Who is the federal chancellor of Germany on 2026-03-01? Provide a brief explanation.",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "free_text",
+  "prompt": "In the context of March 1, 2026, who is the German Chancellor?",
+  "expect_type": "contains",
+  "expect": "Merz"
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Who is the federal chancellor of Germany?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Identify the current head of government for Germany.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Who holds the office of Bundeskanzler in Germany currently?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Name the German Chancellor.",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Who is the leader of Germany at this time?",
+  "expect_type": "none",
+  "expect": ""
+ },
+ {
+  "fact": "s3",
+  "category": "no_date",
+  "prompt": "Identify the person serving as federal chancellor of Germany now.",
+  "expect_type": "none",
+  "expect": ""
+ }
+]

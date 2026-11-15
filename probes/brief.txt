@@ -1,0 +1,20 @@
+A language model has had three facts edited into it. Write test prompts ("probes") for each fact. You only know what is below; do not assume anything else about how the edit was made or how well it works.
+
+Facts (each has a reference date, 2026-03-01):
+- s2: Update this real association for the reference date 2026-03-01: the prime minister of Canada is Mark Carney. Preserve other attributes of Canada, other entities and unrelated uses of both the old and new answer. Example question: "Who or what is the prime minister of Canada on 2026-03-01? Give only the name." Accepted answers: ["Mark Carney", "Mark Joseph Carney"]
+- s0: Update this real association for the reference date 2026-03-01: the chief executive officer of Intel is Lip-Bu Tan. Preserve other attributes of Intel, other entities and unrelated uses of both the old and new answer. Example question: "Who or what is the chief executive officer of Intel on 2026-03-01? Give only the name." Accepted answers: ["Lip-Bu Tan", "Lip Bu Tan"]
+- s3: Update this real association for the reference date 2026-03-01: the federal chancellor of Germany is Friedrich Merz. Preserve other attributes of Germany, other entities and unrelated uses of both the old and new answer. Example question: "Who or what is the federal chancellor of Germany on 2026-03-01? Give only the name." Accepted answers: ["Friedrich Merz"]
+
+For EACH fact write exactly 6 probes in EACH of these 7 categories (42 per fact, 126 in all):
+
+1. "paraphrase": the same question in different words, keeping the reference date. expect_type "contains", expect = the new person's surname.
+2. "implied": something that follows from the fact, keeping the date: ask for part of the name only, a yes/no question, or the reverse question (what office does the person hold). expect_type "contains", expect = the short string a correct answer must contain (for yes/no: "Yes" or "No").
+3. "other_date": the same question with a different explicit date, at least a year away from the reference date. expect_type "same_as_base".
+4. "neighbour": the same relation for other entities (other countries or companies), or other attributes of the same entity. expect_type "same_as_base".
+5. "name_use": other uses of the new person's name, or of other people who share their first name or surname. expect_type "same_as_base".
+6. "free_text": a request for a few sentences that should mention the fact, keeping the date. expect_type "contains", expect = the new person's surname.
+7. "no_date": the question with no date at all. expect_type "none".
+
+Rules: every probe is a single user message to a chat model, self-contained, in English. Vary the wording inside a category. Do not copy the example question. For "contains" the string must be short and unambiguous.
+
+Output only a JSON array of objects with the keys "fact" (s2, s0 or s3), "category", "prompt", "expect_type", "expect" (a string, empty when not used). No commentary.
