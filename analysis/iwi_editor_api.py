@@ -15,6 +15,7 @@
 服務預設由這支程式直接啟動(同一個 Python);需要透過其他程式才能取得 GPU 時,用 --service-launcher 指定前置指令。
 """
 import argparse
+import http.client
 import json
 import math
 import os
@@ -185,8 +186,15 @@ class OpenAIResponses:
                 "include": ["reasoning.encrypted_content"], "reasoning": {"effort": self.effort},
                 "max_output_tokens": self.max_output, "prompt_cache_key": self.cache_key}
         key = os.environ["OPENAI_API_KEY"]
-        with post("https://api.openai.com/v1/responses", {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}, body, 900) as r:
-            res = json.load(r)
+        for attempt in range(3):  # 回應讀到一半斷線就整個重送;斷掉的那次供應商可能仍計費,帳本記不到
+            try:
+                with post("https://api.openai.com/v1/responses", {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}, body, 900) as r:
+                    res = json.load(r)
+                break
+            except http.client.IncompleteRead:
+                if attempt == 2:
+                    raise
+                time.sleep(5)
         u = res.get("usage") or {}
         cached = (u.get("input_tokens_details") or {}).get("cached_tokens", 0)
         usage = {"in": u.get("input_tokens", 0) - cached, "cached": cached, "write": 0, "out": u.get("output_tokens", 0),
