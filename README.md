@@ -14,6 +14,8 @@ Finding 1 is new as far as we could find. For finding 2, others have shown Claud
 
 A shorter article about this work is on the author's site, in [English](https://www.imaknas.com/writing/where-does-it-edit/?lang=en) and [Chinese](https://www.imaknas.com/writing/where-does-it-edit/?lang=zh). The technical write-up, with what these results do not show, is in [`docs/technical-report.md`](docs/technical-report.md). The note sent to the benchmark's authors is in [`docs/issue-sent.md`](docs/issue-sent.md).
 
+A follow-up stage (2026-11-16) is in [`docs/wrap-up-results.md`](docs/wrap-up-results.md): with the token table locked the first editor writes scoring MLP neurons too, the second still writes neurons at lower effort, and edits of the two kinds with equal score are not told apart by 216 blind-written probes.
+
 ## Layout
 
 | Path | Contents |
