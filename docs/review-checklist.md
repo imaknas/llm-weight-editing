@@ -3,7 +3,7 @@
 > 這份是完整的對照表,需要會讀分析的輸出。不需要讀分析就能核對的版本在 `docs/review-walkthrough.md`,建議先看那一份。
 
 用途:文章與 issue 的每一個主張,對到「去哪裡看、看到什麼才算對」。不需要機器學習背景;需要的是打開檔案、比對數字。
-逐條打勾之後,文章裡才寫「作者審閱過」。英文草稿在 `docs/article-draft-en.md`,issue 草稿在 `docs/issue-draft-en.md`。
+逐條打勾之後,文章裡才寫「作者審閱過」。英文草稿在 `docs/technical-report.md`,issue 草稿在 `docs/issue-draft-en.md`。
 
 標記:⬜ 尚未核對。「依據」欄的檔案都在這個專案裡;`data/` 下的檔案不進版本控制,只在這台機器上。
 

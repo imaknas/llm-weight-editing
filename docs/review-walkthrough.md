@@ -123,7 +123,7 @@ Intel 執行長 → Lip-Bu Tan
 
 ### 2-3 文章有沒有照實寫那兩個但書
 
-打開 `docs/article-draft-en.md`,找這兩句:
+打開 `docs/technical-report.md`,找這兩句:
 
 - 摘要的表格下方:"**one episode run without interruption and two that were cut by a cost cap and then resumed**"
 - 同一段:"We set its response cap to 32,000 tokens ourselves, eight times the benchmark's 4,096." 接著說明原因(這個模型的推理關不掉、而且算在回應長度裡),以及 "not a row that could be added to the published leaderboard"
@@ -174,7 +174,7 @@ Intel           Tan          Lip--stein                Brown
 
 ### 3-2 文章沒有把這一點說過頭
 
-`docs/article-draft-en.md` 的 Finding 3 第一點應該是:"None of the nine patches we graded locally passes the surname-only target. No published `factual_update` rollout exceeds 2/3 targets; which target they missed is not in the public data."
+`docs/technical-report.md` 的 Finding 3 第一點應該是:"None of the nine patches we graded locally passes the surname-only target. No published `factual_update` rollout exceeds 2/3 targets; which target they missed is not in the public data."
 
 ☐ 文章寫的是「我們評過的沒有一個通過」,不是「所有編輯者都沒通過」。
 

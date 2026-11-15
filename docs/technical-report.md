@@ -1,8 +1,8 @@
 # In IWIBench, no published score comes from an internal-layer edit, but one is possible with the same tools
 
-*Draft, technical part. Sections marked ⟦Knas⟧ are to be written by the author; everything else was drafted by an AI agent and is to be checked by the author against `docs/review-checklist.md` before publication.*
+**Author:** Knas Xiao · **Code and data:** this repository (github.com/imaknas/llm-weight-editing) · **Date:** 2026-11-15 · **Status:** technical report for one stage of work. Three follow-up questions are listed at the end and have not been run.
 
-**Author:** Knas Xiao · **Code and data:** github.com/imaknas/llm-weight-editing (commit ⟦hash at publication⟧) · **Status:** stage report; three follow-up questions are listed at the end and have not been run.
+This technical text was drafted by an AI agent under the author's direction, and the author went through the evidence for each claim (`docs/review-walkthrough.md`, in Traditional Chinese).
 
 ## Summary
 
@@ -25,11 +25,9 @@ What this does **not** show: that internal edits are better, that the difference
 
 The Fable column is **one episode run without interruption and two that were cut by a cost cap and then resumed** (details under *Deviations*). We set its response cap to 32,000 tokens ourselves, eight times the benchmark's 4,096. The reason is that this model's thinking cannot be switched off and counts toward the cap ([Anthropic's migration guide for the model](https://platform.claude.com/docs/en/models/fable-5-2/migration-guide): "Adaptive thinking is always on"; "Thinking tokens count toward `max_tokens`"; we also confirmed both with direct API calls), so we expected a 4,096-token cap to cut it off before it could call a tool. The runs bore this out: the first response alone was 15,636 to 29,234 tokens, and 9 to 11 responses per episode exceed 4,096. This column is therefore not a row that could be added to the published leaderboard, and whether the model can do the same under a 4,096-token cap was not tested.
 
-## ⟦Knas⟧ Why I looked at this, and who did what
+## Who did what
 
-⟦Author's own text: why the question mattered, the moment it looked wrong, how decisions were made without an ML background, what went wrong along the way, how sure the author is.⟧
-
-**Who did what.** Knas Xiao set the questions, the rules for checking (prior-work search before building, plans reviewed cold before running, results recomputed blind before being believed), the budget, and what to publish, and takes responsibility for this report. An AI agent (Claude Fable 5.2 in Claude Code) read the literature, wrote the code, ran the experiments and wrote this technical part. Independent rechecks were done by separate agent instances that were not shown the results, and by a local model from a different family (Qwen 3.6 35B). Note the overlap: the editor model in finding 2 is the same model that ran the study.
+Knas Xiao set the questions, the rules for checking (prior-work search before building, plans reviewed cold before running, results recomputed blind before being believed), the budget, and what to publish, and takes responsibility for this report. An AI agent (Claude Fable 5.2 in Claude Code) read the literature, wrote the code, ran the experiments and wrote this technical part. Independent rechecks were done by separate agent instances that were not shown the results, and by a local model from a different family (Qwen 3.6 35B). Note the overlap: the editor model in finding 2 is the same model that ran the study.
 
 ## How to check this yourself
 
@@ -120,4 +118,4 @@ The plan, including how each outcome would be read, was written and reviewed bef
 
 ## Disclosure, corrections
 
-Drafted with an AI agent as described above; API costs of about 35 US dollars were paid by the author. Corrections will be listed here with dates. Contact: ⟦contact⟧.
+Drafted with an AI agent as described above; API costs of about 35 US dollars were paid by the author. Corrections will be listed here with dates. To report an error, open an issue on the repository.

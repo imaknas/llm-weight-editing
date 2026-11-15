@@ -10,7 +10,7 @@ Author: Knas Xiao. Licence: MIT (see `LICENSE`, `NOTICE.md`).
 2. An internal-layer edit that scores is possible with the benchmark's own prompt, tools and service-side budgets. Claude Fable 5.2 wrote MLP neurons on three `factual_update` episodes and scored 0.667 on each, and the internal part of each patch alone reproduces the score. One of the three episodes ran without interruption. Two were cut by our own cost cap and then resumed. We set the response cap to 32,000 tokens for this model instead of the benchmark's 4,096, so these runs are not comparable with the published leaderboard. On the same service and driver, gpt-6.1-sol in its published setting edited embedding rows only, as in its published runs.
 3. Both kinds of edit reach at most 2 of 3 targets on these episodes, and none of the patches we graded passes the target that asks for the surname only.
 
-The write-up, with what these results do not show, is in [`docs/article-draft-en.md`](docs/article-draft-en.md). The note sent to the benchmark's authors is in [`docs/issue-draft-en.md`](docs/issue-draft-en.md).
+The write-up, with what these results do not show, is in [`docs/technical-report.md`](docs/technical-report.md). The note sent to the benchmark's authors is in [`docs/issue-draft-en.md`](docs/issue-draft-en.md).
 
 ## Layout
 
