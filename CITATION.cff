@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use the analysis, the episode records or the findings in this repository, please cite the technical report."
+title: "llm-weight-editing: where language-model editors change another model's weights"
+type: software
+authors:
+  - family-names: Xiao
+    given-names: Knas
+    orcid: "https://orcid.org/0009-0007-0414-2355"
+repository-code: "https://github.com/imaknas/llm-weight-editing"
+license: MIT
+date-released: "2026-11-15"
+preferred-citation:
+  type: report
+  title: "In IWIBench, no published score comes from an internal-layer edit, but one is possible with the same tools"
+  authors:
+    - family-names: Xiao
+      given-names: Knas
+      orcid: "https://orcid.org/0009-0007-0414-2355"
+  year: 2026
+  month: 11
+  url: "https://github.com/imaknas/llm-weight-editing/blob/main/docs/technical-report.md"
+  notes: "Technical report. Drafted with an AI agent under the author's direction; see the report for how the work was done."

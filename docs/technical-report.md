@@ -1,6 +1,6 @@
 # In IWIBench, no published score comes from an internal-layer edit, but one is possible with the same tools
 
-**Author:** Knas Xiao · **Code and data:** this repository (github.com/imaknas/llm-weight-editing) · **Date:** 2026-11-15 · **Status:** technical report for one stage of work. Three follow-up questions are listed at the end and have not been run.
+**Author:** Knas Xiao ([ORCID 0009-0007-0414-2355](https://orcid.org/0009-0007-0414-2355)) · **Code and data:** this repository (github.com/imaknas/llm-weight-editing) · **Date:** 2026-11-15 · **Status:** technical report for one stage of work. Three follow-up questions are listed at the end and have not been run.
 
 This technical text was drafted by an AI agent under the author's direction, and the author went through the evidence for each claim (`docs/review-walkthrough.md`, in Traditional Chinese).
 

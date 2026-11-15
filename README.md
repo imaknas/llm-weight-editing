@@ -2,7 +2,7 @@
 
 Experiments on language models that read and edit the weights of other models. The current stage is a re-analysis of [IWIBench](https://github.com/HCLTech-robotics/iwibench) (arXiv 2611.08647), a benchmark in which an "editor" model changes the weights of Gemma 3 4B through four tools.
 
-Author: Knas Xiao. Licence: MIT (see `LICENSE`, `NOTICE.md`).
+Author: Knas Xiao ([ORCID 0009-0007-0414-2355](https://orcid.org/0009-0007-0414-2355)). Licence: MIT (see `LICENSE`, `NOTICE.md`). To cite, see `CITATION.cff`.
 
 ## What this stage found
 
