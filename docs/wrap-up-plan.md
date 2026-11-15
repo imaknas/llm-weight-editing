@@ -1,6 +1,7 @@
 # Wrap-up plan: addresses for neurons, and a paired comparison of the two kinds of edit
 
-Status: plan, version 2, 2026-11-16. Part one stopped at its free feasibility check (section 1.3, check 2); part
+Status: plan, version 3, 2026-11-16. Version 3 adds section 1A, which replaces part one as the experiment on
+the "why" question. What follows in this paragraph describes version 2. Part one stopped at its free feasibility check (section 1.3, check 2); part
 two has not been run. Version 1 was reviewed cold by two reviewers who did not see each other; the
 changes are listed in section 4. No paid run has been made. The only things run are the free local checks in
 section 1.3. The rules in sections 1.4, 1.7 and 2.5 are fixed before the data they apply to exist.
@@ -177,36 +178,140 @@ not exclusive.
 Not concluded in any case: anything about other editors, other families, labels of another kind, or mid-network
 units.
 
+## 1A. Part one, replaced: three explanations, one of them testable for money
+
+Sections 1.1 to 1.7 are kept as the record of what was tried. This section is what will be run.
+
+### 1A.1 Why the address explanation is set aside
+
+The label check failed for a reason that goes beyond the label. A token-table row exists for every token and
+corresponds to it by construction; an address only says where it is. Nothing inside the network corresponds by
+construction to "who is the prime minister of Canada". The Fable episodes did not find a neuron, they built one. A
+label can therefore only point at existing units that happen to fire on one prompt, which is borrowing, and a label
+that specified when a unit should fire and what it should write would be the edit itself, not an address.
+
+Second, Sol's token-table edits do not rest on the address alone either. Sol reads the model's internal state at
+the answer position with `inspect_target` and adds that direction to a row. Both kinds of edit need that
+measurement. What differs is what comes after it: one `add` on a row, against a normalisation, a gated
+nonlinearity, a strength and a free slot to work out. That is a difference in difficulty, which is not separable
+from the two other explanations below. The address explanation is therefore reported as analysis, with the label
+check as its evidence, and is not tested further. This reasoning is mine and was written after the check.
+
+### 1A.2 Reasoning effort: what the published data already show, no spending
+
+The benchmark's authors ran `gpt-6.1-sol` at low, medium and high reasoning, 30 rollouts each. Counted from the
+published traces with the analysis already in this repository, and recounted by a reviewer:
+
+| Setting | Rollouts | Wrote inside at some point | Final patch has internal tensors | `factual_update`: wrote inside, rewards |
+|---|---|---|---|---|
+| low | 30 | 1 | 1 | 0 of 3; 0.30, 0.67, 0.67 |
+| medium | 30 | 4 | 3 | 0 of 3; 0.67, 0.67, 0.67 |
+| high | 30 | 8 | 6 | 0 of 3; 0.67, 0.67, 0.67 |
+
+More reasoning goes with more attempts inside, in other families. On the facts there is no internal write at any
+setting, but that is three rollouts per setting: at the high setting's overall rate of 8 in 30, three rollouts
+with none would happen about 4 times in 10 by chance. The patch ablation in the technical report showed that none
+of these internal parts scores. So the published data do not show reasoning effort turning fact edits into
+internal ones, and are too few to rule it out. No new open-table episodes are run for this beyond the baseline in
+1A.3.
+
+### 1A.3 Capability: lock the token table
+
+**Manipulation.** The service that the editor talks to marks the token table (`embed_tokens`, with its tied alias
+`lm_head`) as frozen, the way it already marks the vision tower. The manifest in the prompt then shows
+`"writable": false` for it, and a write to it under either name returns the service's own error, "Tensor is
+frozen". The table stays readable. No sentence is added to the prompt, the `token_ids` block stays, and the tools
+are unchanged. The switch is set in the service process for these episodes only; the benchmark's source is not
+edited, so grading and part two run on the unmodified code.
+
+This is close to a condition in Hu et al. (arXiv 2611.09382), where embedding edits were not allowed. What is
+added here is the same benchmark, editor and facts as the open-table data, so the two can be set side by side.
+
+**Conditions.** `gpt-6.1-sol`, family `factual_update`, seeds 2, 0 and 3, at the published low and high settings,
+both with the published 4,096-token response cap.
+
+| Table | Setting | Episodes |
+|---|---|---|
+| locked | low | 2 per seed |
+| locked | high | 2 per seed |
+| open | high | 1 per seed, as a baseline run through the same driver |
+
+15 episodes, in an order shuffled with a fixed random seed. The open-table low baseline is our 3 existing
+episodes. The authors' 9 rollouts on this family are shown beside them.
+
+**Measurements.** Per episode, from the trace and the final patch:
+
+1. **Tried inside**: at least one successful write to a tensor other than the token table.
+2. **Scored**: reward of the final patch from the benchmark's grader, with targets and controls kept reported
+   separately. With the table locked the patch can only be internal. An empty patch is reward 0 and marked
+   "no edit".
+3. Where the patch is: tensor kind (MLP, attention, normalisation) and layer. Edits in layer 0, in layer 33 or in
+   the final normalisation are marked, since they sit next to the token table on the input or the output side and
+   may work as a substitute for it.
+4. Refused writes to the table, counted under both of its names.
+5. How the episode ended: final reply, a length stop at 4,096 tokens, a limit, or the cost stop.
+
+**Cost.** The published traces priced at current rates give 0.26 to 0.35 for low, against 0.25 to 0.33 measured
+here, and 0.35 to 0.77 for high. A locked table may make episodes longer. Every episode has the same stop, 2.50 US
+dollars, so that long episodes are not cut selectively. Expected total 6 to 10. The ledger's total is set so that
+this section cannot spend more than 15; if the remaining room is less than 2.50 the run stops and the missing
+cells are reported as not run. Spent so far: 35.47 of 60.
+
+**Readings, fixed in advance.** Stated for each setting separately, on its 6 locked episodes. These are
+observations, not rates.
+
+- *Scored at least once* (reward above 0): this editor, at this setting, can make a scoring edit of a fact without
+  the token table. Its token-table edits in the open setting are then the route it takes when both are available,
+  not the only one available to it. If every scoring patch is of the marked kind in measurement 3, the statement
+  is the weaker one: it found a substitute next to the table.
+- *Scored never, tried inside in 4 or more of 6*: it tries and does not succeed at this setting.
+- *Scored never, tried inside in 2 or fewer of 6*: it does not take the internal route even with the other closed.
+- *Scored never, tried inside in 3 of 6*: mixed, reported as such.
+- If low and high fall under different readings, both are stated, with the caution that it is 6 episodes against 6.
+- If episodes mostly end on the length stop, the result is about the 4,096-token setting and is said to be.
+
+Not concluded: a capability limit in general, since a larger response cap and other reasoning settings are not
+run; and anything about why Fable took the internal route with the table open.
+
 ## 2. Part two: the two kinds of edit on the same facts
 
 ### 2.1 Material
 
-For each of seeds 2, 0 and 3, three patches already on disk: Sol's (token-table rows only), Fable's as submitted
-(one MLP neuron, plus the scratch rows and zeroed neurons it left behind), and the internal part of Fable's alone,
-so that the neuron can be told apart from the debris. Two of the Fable episodes were cut by a cost cap and
-resumed. Here the patches are compared as objects, not used as evidence about editor behaviour, so all three
-seeds are used.
+Per seed (2, 0 and 3), the candidates are:
 
-The pairs are not equal in strength and are not pooled. On the benchmark's own items seed 2 is 0.333 against
-0.667; seed 3 is 0.667 against 0.667 in the benchmark's batches, but Sol's patch falls to 0.333 when each item is
-run alone, by a margin of 0.25 logits. Each patch's score on the benchmark's items under the procedure of 2.3 is
-reported next to its probe results.
+- Token-table patches: ours from the Sol episode, and the authors' published Sol patches for the same seed at low,
+  medium and high.
+- Fable's patch from our API episodes (`fable-high-32k-*`), as submitted, and its internal part alone. The
+  internal part is one neuron in seed 2, six neurons in layers 27 and 29 in seed 0, and two neurons plus one
+  normalisation element in seed 3; it also contains neurons the editor zeroed while measuring. The full patch adds
+  token-table rows used as scratch space.
+
+Two of the Fable episodes were cut by a cost cap and resumed. Here the patches are compared as objects, not used
+as evidence about editor behaviour.
+
+**Matching on strength, before any probe is run.** Every candidate is first graded on the benchmark's own items
+under the procedure of 2.3. For each seed the token-table patch used is the one whose reward equals that of
+Fable's full patch; if several do, the first in the order ours, low, medium, high. A seed with no equal candidate
+is reported descriptively and enters no statement in 2.5. Without this, a weaker patch would lose on paraphrases
+for being weaker, not for being a token-table edit.
 
 ### 2.2 Probes
 
-Written before any probe is run, by two writers that work independently and see only the three objectives and
-practice prompts and the category table below: one fresh agent and one local model of another family. They do not
-see patches, transcripts, the benchmark's hidden items or any earlier result. Each probe states its category and a
-machine-checkable expectation.
+The categories below were chosen by me, and I have read the editors' own reports of side effects, so the
+categories are not blind. The probes inside them are: they are written before any probe is run by two writers
+that work independently and see only the three objectives, the practice prompts and this table. One is a fresh
+agent and one a local model of another family. They do not see patches, transcripts, the benchmark's hidden items
+or any earlier result. Each writes 6 probes per category and fact, each with a machine-checkable expectation.
 
 | Category | Expectation |
 |---|---|
-| Paraphrase of the question | contains the new name |
-| Implied by the fact (part of the name, yes/no, the reverse question) | stated string |
-| Other dates | same as base |
+| Paraphrase of the question, keeping the reference date | contains the new name |
+| Implied by the fact (part of the name, yes/no, the reverse question), keeping the date | stated string |
+| The same question with another explicit date | same as base |
 | Same relation, other entities; other relations, same entity | same as base |
-| Other uses of the old and new names, and of their first names | same as base |
-| Free text that should mention the fact | contains the new name |
+| Other uses of the new name and its first name | same as base |
+| Free text that should mention the fact, keeping the date | contains the new name |
+| The question with no date | none; outputs are reported |
 
 The union of the two sets is used, with exact duplicates removed. Three probes known from earlier episodes
 (surname only, deputy prime minister, party leader) form a separate non-blind group; if a writer produces an
@@ -214,10 +319,12 @@ equivalent on its own, that probe stays in the blind set and both are run.
 
 ### 2.3 Procedure
 
-Each probe is run alone (batch size 1), greedy, 64 new tokens, on the base model and on each patch. "Same as base"
-compares outputs after trimming whitespace. The base model is run twice; a probe whose two base outputs differ is
-dropped and counted. For probes whose expected answer begins with the new name, the logit margin between the first
-tokens of the new and old names at the answer position is also recorded; for other probes no margin is taken.
+Each probe is run alone (batch size 1), greedy, with the benchmark's generation length, on the base model, the
+matched token-table patch, Fable's full patch and Fable's internal part. "Same as base" compares outputs after
+trimming whitespace. The base model is run twice; a probe whose two base outputs differ is dropped and counted.
+For probes whose expected answer begins with the new name, the logit margin between the first tokens of the new
+name and of the base model's answer (both without a leading space, as the answer opens the reply) is recorded at
+the answer position; for other probes no margin is taken.
 
 ### 2.4 Cost
 
@@ -226,14 +333,16 @@ No API spending. Local GPU time only.
 ### 2.5 Readings, fixed in advance
 
 Reported per category and per seed as counts, with no pooling and no significance claims; there are several
-categories and only three facts, so isolated differences are expected by chance. A difference between the two
-kinds of edit is stated for a category only if, in all three seeds, the two patches disagree on at least two
-probes and the disagreements favour the same kind of edit in every seed. Otherwise the statement is "no consistent
-difference in this category". Where Fable's full patch and its neuron-only part disagree, the difference is
-attributed to the debris and said so. The non-blind group is reported apart and enters no count.
+categories and at most three facts, so isolated differences are expected by chance. The comparison is between the
+matched token-table patch and Fable's full patch. A probe favours a patch if that patch meets the expectation and
+the other does not. A difference is stated for a category only if, in every matched seed, at least two probes
+favour the same patch and none favours the other; with fewer than two matched seeds no difference is stated at
+all. Otherwise the statement is "no consistent difference in this category". Where Fable's full patch and its
+internal part differ, the difference is attributed to the scratch rows. The non-blind group is reported apart and
+enters no count.
 
-Not concluded: that one kind of edit is better in general. These are three facts, one family, one patch per cell,
-each made by a different editor with a different output budget.
+Not concluded: that one kind of edit is better in general. These are at most three facts, one family, one patch
+per cell, made by different editors with different output budgets.
 
 ## 3. Checks
 
@@ -273,3 +382,18 @@ reviewed again; sections 2.1 to 2.5 get one more cold review before part two is 
   tools; whether the editor finds it is the experiment.
 - Not adopted: a claim that "scored inside" has no causal link to the edit (the internal part is graded alone
   against a base that scores 0 of 3 targets).
+
+## 5. Changes in version 3 after a second review
+
+Section 1A and part two were reviewed cold by two reviewers again. The reviewer with file access recounted the
+table in 1A.2 and confirmed how freezing works in the code; I did not repeat those two checks. Adopted:
+
+- 1A.2 said the question was answered; three rollouts per setting cannot do that. Reworded.
+- 1A.3: the freeze must not touch the grader or part two; the response cap for high was unstated; "internal" by
+  tensor name lets in substitutes next to the table; the readings had gaps; there was no open-table baseline
+  through our driver at high; a stop derived from one episode would cut long episodes selectively. All changed.
+- Part two: under batch size 1 two of our three Sol patches are weaker than Fable's, which would have been read
+  as a difference between kinds of edit. Patches are now matched on strength first, using the authors' published
+  Sol patches as further candidates. The Fable patches were misdescribed as one neuron each. The comparison rule
+  and the probe counts were undefined. The categories are mine and not blind; said so.
+- Not adopted: a request for statistical power. The readings are worded as observations.
