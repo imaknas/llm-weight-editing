@@ -23,7 +23,7 @@ What this does **not** show: that internal edits are better, that the difference
 | Output tokens per episode | 1.3k–2.1k | 119k–165k |
 | Tool calls per episode | 10–20 | 78–99 |
 
-The Fable column is **one episode run without interruption and two that were cut by a cost cap and then resumed** (details under *Deviations*). It also exceeds the benchmark's 4,096-token response cap in 9–11 responses per episode, so it is not a row that could be added to the published leaderboard.
+The Fable column is **one episode run without interruption and two that were cut by a cost cap and then resumed** (details under *Deviations*). We set its response cap to 32,000 tokens ourselves, eight times the benchmark's 4,096. The reason is that this model's thinking cannot be switched off and counts toward the cap, so we expected a 4,096-token cap to cut it off before it could call a tool. The runs bore this out: the first response alone was 15,636 to 29,234 tokens, and 9 to 11 responses per episode exceed 4,096. This column is therefore not a row that could be added to the published leaderboard, and whether the model can do the same under a 4,096-token cap was not tested.
 
 ## ⟦Knas⟧ Why I looked at this, and who did what
 
@@ -65,7 +65,7 @@ What the internal parts are: in one patch, rounding residue left by scaling a no
 
 **gpt-6.1-sol, published "low" setting.** Three episodes, all scored, all writes to the embedding matrix, 10–20 tool calls, no truncated response. This is the same behaviour as the nine published episodes of this model on these seeds (scores are not identical per seed; the published setting sends no temperature and is not deterministic).
 
-**Claude Fable 5.2.** Thinking cannot be disabled on this model and it does not accept a temperature, so the benchmark's "reasoning none, 4,096 tokens" setting does not exist for it; it was run at effort high with a 32,000-token response cap.
+**Claude Fable 5.2.** Thinking cannot be disabled on this model and it does not accept a temperature, so the benchmark's "reasoning none, 4,096 tokens" setting does not exist for it. We chose to run it at effort high with a 32,000-token response cap, because its thinking counts toward the cap and a 4,096-token cap would probably have ended each episode at the first response.
 
 | Seed (fact) | What it wrote | Full patch | Embedding part only | Internal part only |
 |---|---|---|---|---|

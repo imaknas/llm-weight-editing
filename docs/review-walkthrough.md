@@ -126,7 +126,7 @@ Intel 執行長 → Lip-Bu Tan
 打開 `docs/article-draft-en.md`,找這兩句:
 
 - 摘要的表格下方:"**one episode run without interruption and two that were cut by a cost cap and then resumed**"
-- 同一段:"exceeds the benchmark's 4,096-token response cap in 9–11 responses per episode, so it is not a row that could be added to the published leaderboard"
+- 同一段:"We set its response cap to 32,000 tokens ourselves, eight times the benchmark's 4,096." 接著說明原因(這個模型的推理關不掉、而且算在回應長度裡),以及 "not a row that could be added to the published leaderboard"
 
 以及 "Deviations from our plan" 第 1 點最後一句:"Strictly by the plan, stage 2 is one episode in the "internal edit scores" category and two censored."
 
