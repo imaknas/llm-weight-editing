@@ -278,9 +278,14 @@ class Ledger:
         self.episode = 0.0
         self.total = sum(json.loads(l)["usd"] for l in self.path.read_text().splitlines()) if self.path.exists() else 0.0
 
-    def reserve(self, context_tokens, max_output):
-        """送出前的最壞估計:整段上下文都沒命中快取(以寫入價計),輸出用到上限。"""
-        worst = (context_tokens * max(self.p["in"], self.p["write"]) + max_output * self.p["out"]) / 1e6
+    def reserve(self, context_tokens, max_output, new_tokens=None):
+        """送出前的保守估計。new_tokens = None:整段上下文都沒命中快取(以寫入價計)。
+        給了 new_tokens(上一次呼叫在快取存活時間內):舊的部分以讀取價計,只有新增的部分以寫入價計。輸出一律用到上限。"""
+        dear = max(self.p["in"], self.p["write"])
+        if new_tokens is None:
+            worst = (context_tokens * dear + max_output * self.p["out"]) / 1e6
+        else:
+            worst = ((context_tokens - new_tokens) * self.p["cached"] + new_tokens * dear + max_output * self.p["out"]) / 1e6
         if self.total + worst > self.budget:
             return f"total budget: spent {self.total:.2f}, next call up to {worst:.2f}, cap {self.budget:.2f}"
         if self.episode + worst > self.cap:
@@ -293,6 +298,40 @@ class Ledger:
         with self.path.open("a") as f:
             f.write(json.dumps({"time": time.time(), "label": self.label, "turn": turn, "usage": usage, "usd": round(usd, 6)}) + "\n")
         return usd
+
+
+# ---------- 接回 ----------
+
+def restore(a, ed, meta, out):
+    """由 transcript.jsonl 重建編輯者端的對話與計數(只支援 Messages API 的回合)。回傳 (上次的輸入 token, 上次呼叫時間, 當時的位元組數)。"""
+    if a.provider != "anthropic":
+        raise RuntimeError("resume is implemented for the Messages API only")
+    events = [json.loads(l) for l in (out / "transcript.jsonl").read_text().splitlines()]
+    seen, when, i = 0, 0.0, 0
+    while i < len(events):
+        e = events[i]
+        i += 1
+        if e.get("event") != "model":
+            continue
+        ed.messages.append({"role": "assistant", "content": e["output"]})
+        u = e["usage"]
+        seen, when = u["in"] + u["cached"] + u["write"] + u["out"], e["time"]
+        meta["turns"] += 1
+        meta["stops"].append(e["stop"])
+        meta["max_out"], meta["sum_out"] = max(meta["max_out"], u["out"]), meta["sum_out"] + u["out"]
+        ids = [b["id"] for b in e["output"] if b.get("type") == "tool_use"]
+        results = []
+        while len(results) < len(ids) and i < len(events):
+            t = events[i]
+            i += 1
+            if t.get("event") == "tool":
+                results.append((ids[len(results)], t["content"], bool(t.get("invalid")) or not t.get("ok")))
+        if len(results) != len(ids):
+            raise RuntimeError("transcript ends in the middle of a tool batch; cannot resume")
+        meta["tool_calls"] += len(ids)
+        if ids:
+            ed.results(results)
+    return seen, when, ed.context_bytes()
 
 
 # ---------- 回合 ----------
@@ -310,35 +349,53 @@ def run(a):
     tools = json.loads(Path(__file__).with_name("iwi_editor_tools.json").read_text())
     svc = Service(log)
     ledger = Ledger(a.model, a.budget, a.episode_cap, a.label)
+    if a.resume:
+        ledger.episode = sum(json.loads(l)["usd"] for l in ledger.path.read_text().splitlines() if json.loads(l)["label"] == a.label)
     meta = {"label": a.label, "provider": a.provider, "model": a.model, "effort": a.effort, "max_output": a.max_output,
             "family": a.family, "seed": a.seed, "end": None, "turns": 0, "tool_calls": 0, "stops": [], "max_out": 0, "sum_out": 0}
     try:
-        svc.start()
-        res = svc.op({"op": "create", "family": a.family, "seed": a.seed, "trace_id": a.label}, timeout=600)
-        if not res.get("ok"):
-            raise RuntimeError(f"create failed: {res}")
-        r = res["result"]
-        svc.session = r["session_id"]
-        public = {"objective": r["objective"], "practice": r.get("practice", []), "manifest": r["manifest"],
-                  "token_ids": r.get("token_ids", {}), "limits": r.get("limits", {})}
-        prompt = INTRO + json.dumps(public, ensure_ascii=False, separators=(",", ":"))
-        (out / "prompt.txt").write_text(prompt)
-        last = (0, r["counters"])
+        if a.resume:
+            # 接回被中止的回合:服務用存檔開新 session(舊的已提交過),編輯者端的對話由紀錄重建
+            old = json.loads((out / "meta.json").read_text())
+            (out / f"meta-before-resume-{int(time.time())}.json").write_text(json.dumps(old, ensure_ascii=False, indent=1))
+            state = json.loads((Path("data/iwi-runs") / old["session"] / "state.json").read_text())
+            svc.session = old["session"]
+            svc.ensure(expect=(state["revision"], state["counters"]))
+            last = (state["revision"], state["counters"])
+            prompt = (out / "prompt.txt").read_text()
+        else:
+            svc.start()
+            res = svc.op({"op": "create", "family": a.family, "seed": a.seed, "trace_id": a.label}, timeout=600)
+            if not res.get("ok"):
+                raise RuntimeError(f"create failed: {res}")
+            r = res["result"]
+            svc.session = r["session_id"]
+            public = {"objective": r["objective"], "practice": r.get("practice", []), "manifest": r["manifest"],
+                      "token_ids": r.get("token_ids", {}), "limits": r.get("limits", {})}
+            prompt = INTRO + json.dumps(public, ensure_ascii=False, separators=(",", ":"))
+            (out / "prompt.txt").write_text(prompt)
+            last = (0, r["counters"])
         ed = (OpenAIResponses(a.model, a.effort, a.max_output, prompt, tools, a.label) if a.provider == "openai"
               else AnthropicMessages(a.model, a.effort, a.max_output, prompt, tools))
-        log({"event": "start", "session": svc.session, "prompt_bytes": len(prompt.encode())})
-        seen_tokens = 0
+        log({"event": "resume" if a.resume else "start", "session": svc.session, "prompt_bytes": len(prompt.encode())})
+        seen_tokens, last_call, seen_bytes = 0, 0.0, 0
+        if a.resume:
+            seen_tokens, last_call, seen_bytes = restore(a, ed, meta, out)
         while True:
             if meta["turns"] >= 64 or meta["tool_calls"] >= 128:
                 meta["end"] = "limit"
                 break
             # 上下文的保守估計:上一輪實際的輸入 token + 之後新增內容的位元組數 / 3
-            est = int(seen_tokens * 1.05 + 4096) if seen_tokens else math.ceil(ed.context_bytes() / 3)
-            why = ledger.reserve(est, a.max_output)
+            grown = math.ceil(max(0, ed.context_bytes() - seen_bytes) / 2.5) + 2048
+            est = seen_tokens + grown if seen_tokens else math.ceil(ed.context_bytes() / 2)
+            warm = seen_tokens and time.time() - last_call < a.cache_seconds
+            why = ledger.reserve(est, a.max_output, grown if warm else None)
             if why:
                 meta["end"] = f"cost_abort: {why}"
                 break
+            last_call = time.time()
             resp = ed.call()
+            seen_bytes = ed.context_bytes()
             meta["turns"] += 1
             u = resp["usage"]
             usd = ledger.charge(u, meta["turns"])
@@ -429,4 +486,6 @@ if __name__ == "__main__":
     ap.add_argument("--label", required=True)
     ap.add_argument("--budget", type=float, required=True, help="所有回合合計的美元上限(讀帳本累計)")
     ap.add_argument("--episode-cap", type=float, required=True, help="這個回合的美元上限")
+    ap.add_argument("--resume", action="store_true", help="接回先前因花費上限而中止的同名回合")
+    ap.add_argument("--cache-seconds", type=float, default=3300, help="上一次呼叫在這段時間內,就假設提示快取還在")
     run(ap.parse_args())
