@@ -4,6 +4,8 @@
 
 **Observations from re-grading the published rollouts: no score traces to an internal-layer edit; notes on `factual_update` and on running off-CUDA**
 
+Hi folks,
+
 I re-graded some of the published patches locally with your grading worker and scorer, and ran a few extra editor episodes against your `Service` class. This was only possible because you published the rollouts, patches and native traces. Four observations follow. Scripts, a fuller write-up and the limits are at https://github.com/imaknas/llm-weight-editing (`docs/article-draft-en.md`).
 
 **1. In the 330 family-0.2.2 rollouts, no score is attributable to an internal-layer edit.**
@@ -28,4 +30,4 @@ None of the nine patches I graded locally passes `target:downstream`, and no pub
 - Off-CUDA: on Apple MPS with source commit `db9475f`, twelve seeds of `answer_length_control` (1, 2, 5–14) fail baseline calibration, including seeds 1, 2 and 5 that your calibration table lists as eligible. I did not establish the cause.
 - Fragility: in my own run of gpt-6.1-sol at your "low" setting, one success on `factual_update` seed 3 leads its runner-up by one BF16 logit step; generating one prompt per batch instead of eight flips it ("Friedrich Merkel") and the reward goes from 0.667 to 0.333.
 
-If I have misread your setup anywhere, please correct me. I directed this work and an AI coding agent did the implementation. I have checked each claim above against the data, and I am the one to ask about them.
+If I have misread your setup anywhere, please correct me. I directed this work and an AI coding agent did the implementation. I went through the evidence for each claim with the agent, and I am the one to ask about them.
