@@ -1,4 +1,4 @@
-# In IWIBench, no published score comes from an internal-layer edit — but one is possible with the same tools
+# In IWIBench, no published score comes from an internal-layer edit, but one is possible with the same tools
 
 *Draft, technical part. Sections marked ⟦Knas⟧ are to be written by the author; everything else was drafted by an AI agent and is to be checked by the author against `docs/review-checklist.md` before publication.*
 
@@ -63,7 +63,7 @@ What the internal parts are: in one patch, rounding residue left by scaling a no
 
 **How closely the driver matches the benchmark's harness** was checked against the authors' published native traces for nine gpt-6.1-sol episodes: our prompt is byte-identical to theirs for all three seeds and tokenises to the same count (49,125 for seed 2); the tool definitions are taken from their traces; 205 of 205 untruncated tool outputs in their traces are reproduced byte-for-byte by our formatter, and the 14 truncated ones fit our truncation rule; all 223 of their tool calls pass our request validation.
 
-**gpt-6.1-sol, published "low" setting.** Three episodes, all scored, all writes to the embedding matrix, 10–20 tool calls, no truncated response — the same behaviour as the nine published episodes of this model on these seeds (scores are not identical per seed; the published setting sends no temperature and is not deterministic).
+**gpt-6.1-sol, published "low" setting.** Three episodes, all scored, all writes to the embedding matrix, 10–20 tool calls, no truncated response. This is the same behaviour as the nine published episodes of this model on these seeds (scores are not identical per seed; the published setting sends no temperature and is not deterministic).
 
 **Claude Fable 5.2.** Thinking cannot be disabled on this model and it does not accept a temperature, so the benchmark's "reasoning none, 4,096 tokens" setting does not exist for it; it was run at effort high with a 32,000-token response cap.
 
@@ -92,7 +92,7 @@ This is a conditional boost of specific output tokens at a specific position, no
 
 The plan, including how each outcome would be read, was written and reviewed before the paid runs (`docs/editor-conditions-plan.md`).
 
-1. **Two Fable episodes were cut by our own cost cap and resumed.** By the plan's rule they should have been set aside as censored. The cap was mis-set (it reserved a worst-case price for every call). After the cut — and after seeing the half-finished patches score 0/3 — we wrote a resume path and finished them. Evidence that the resume was invisible to the model: every counter continues by exactly one call; the patch at the cut equals the patch restored; the first resumed request reads the entire previous request from the provider's cache, so the rebuilt conversation prefix is byte-identical; the grade at the cut was never placed in the conversation. Strictly by the plan, stage 2 is one episode in the "internal edit scores" category and two censored.
+1. **Two Fable episodes were cut by our own cost cap and resumed.** By the plan's rule they should have been set aside as censored. The cap was mis-set (it reserved a worst-case price for every call). After the cut, and after seeing the half-finished patches score 0/3, we wrote a resume path and finished them. Evidence that the resume was invisible to the model: every counter continues by exactly one call; the patch at the cut equals the patch restored; the first resumed request reads the entire previous request from the provider's cache, so the rebuilt conversation prefix is byte-identical; the grade at the cut was never placed in the conversation. Strictly by the plan, stage 2 is one episode in the "internal edit scores" category and two censored.
 2. The local service must restart every 30 minutes; it was restarted between turns once per Fable episode.
 3. The Fable request bodies were not logged, only responses and tool results. That the first request contains nothing but the tool definitions and the prompt was verified afterwards by token count (88,651 / 88,804 / 88,679, equal to the first-turn usage).
 4. Provider retries (up to six) were not logged.
@@ -116,7 +116,7 @@ The plan, including how each outcome would be read, was written and reviewed bef
 
 1. Do the two kinds of edit differ in generalisation and side effects on a held-out prompt set written before looking?
 2. Does Fable still produce internal edits with little output, and does gpt-6.1-sol at its highest effort?
-3. With `inspect_target` removed — weights readable, activations not — can any editor make an internal edit work? The embedding matrix is the one place where "which weights mean what" is known in advance (row *i* is token *i*); every internal edit that worked here was built from activations.
+3. With `inspect_target` removed, so that weights are readable and activations are not, can any editor make an internal edit work? The embedding matrix is the one place where "which weights mean what" is known in advance (row *i* is token *i*); every internal edit that worked here was built from activations.
 
 ## Disclosure, corrections
 
