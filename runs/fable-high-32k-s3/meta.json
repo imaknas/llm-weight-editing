@@ -1,0 +1,112 @@
+{
+ "label": "fable-high-32k-s3",
+ "provider": "anthropic",
+ "model": "claude-fable-5-2",
+ "effort": "high",
+ "max_output": 32000,
+ "family": "factual_update",
+ "seed": 3,
+ "end": "final_reply",
+ "turns": 35,
+ "tool_calls": 99,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "max_out": 29234,
+ "sum_out": 164899,
+ "final_text": "The edit is in place: the practice prompt now returns exactly \"Friedrich Merz\", and the checks I could run on neighbouring facts were unchanged.\n\n**What was tested (greedy generation on the final weights unless noted)**\n\n| Prompt type | Result |\n|---|---|\n| Practice prompt | \"Friedrich Merz\" |\n| Six rephrasings, dated and undated (\"Who currently serves as…\", \"On 2026-03-01, who or what is…\", \"Who is the current Chancellor of Germany?\", \"Who is the head of government of Germany today?\", etc.) | \"Friedrich Merz\" |\n| Federal president / head of state of Germany | Frank-Walter Steinmeier (unchanged) |\n| Vice chancellor, foreign minister, 2018–2021 finance minister, chancellor of Switzerland | Identical to base in a side-by-side comparison |\n| \"Who succeeded Angela Merkel as Chancellor of Germany?\" | Olaf Scholz (unchanged) |\n| First president of Germany (Friedrich Ebert), author of Zarathustra (Friedrich Nietzsche) | Unchanged |\n| \"Who is Friedrich Merz?\" | Sensible CDU-leader description, not compared against base |\n\nFive more were checked only at a looser trigger setting than the final one, and were unaffected there: chancellor of Austria, capital of Germany, chancellor of Germany in 2010 (Merkel), \"Who is Olaf Scholz?\", and Scholz's party.\n\n**Known weaknesses**\n\n- **Thin margin on the president question.** The federal president and Merkel-successor prompts sit just below the trigger threshold; at the looser setting both flipped to Merz. They are correct now, but similar untested prompts could fall on the wrong side.\n- **Not every rephrasing is covered.** \"Name the person who holds the position of federal chancellor of Germany on 2026-03-01\" still gave \"Olaf Scholz\" at the looser setting; it was not re-run on the final weights.\n- **The edit ignores the date.** Asking for the chancellor on 2023-03-01 also returns \"Friedrich Merz\".\n- **Sentence-form answers lose a space.** \"Who is the Chancellor of Germany? Answer in a full sentence.\" gives \"The current Chancellor of Germany isFriedrich Merz.\"\n- **Stale description of Scholz.** \"Who is Olaf Scholz?\" still says he is the current Chancellor.\n- **No final probability check.** The inspection budget ran out before the edit, so verification is from generated text only.\n\n**What was changed**\n\nAll changes are in language-model layer 31, plus one scratch area:\n\n- **MLP neuron 6144** was overwritten to detect \"about to answer the German-chancellor question with Olaf Scholz\" at the answer position and push the first token from \"O\" to \"Fried\".\n- **MLP neuron 2777** was overwritten to push \" Mer\" after \"Friedrich\" in the same context, because the base model does not reliably continue \"Friedrich\" with \"Merz\".\n- **`pre_feedforward_layernorm.weight[443]`** went from −1.0 to −0.99609375 so the two neurons have a threshold input; the effect on other layer-31 neurons should be negligible, judging by their small weights on that dimension.\n- **Embedding rows 262144–262147** (extra rows beyond the text vocabulary, originally ~1e-4 in magnitude) were used as scratch and are now zero.\n\nThe original functions of neurons 6144 and 2777 are lost. A third neuron (17) was borrowed as a temporary probe; its down-projection column was confirmed restored, while its gate and up rows were restored by the same exact copy but not separately checked.",
+ "session": "199869f78fce77aa4fd76ea4dc3c44926b77144c173d1aca",
+ "reward": 0.6666666666666666,
+ "counters": {
+  "tool_calls": 99,
+  "run_calls": 8,
+  "run_sequences": 64,
+  "inspect_calls": 4,
+  "inspect_sequences": 13,
+  "forward_tokens": 2977,
+  "inspection_scalars": 261828,
+  "weight_scalars": 269
+ },
+ "groups": {
+  "targets": {
+   "count": 3,
+   "base_successes": 0,
+   "edited_successes": 2,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  },
+  "nearby_controls": {
+   "count": 4,
+   "base_successes": 4,
+   "edited_successes": 4,
+   "retained_successes": 4,
+   "retention_denominator": 4
+  },
+  "general_controls": {
+   "count": 64,
+   "base_successes": 64,
+   "edited_successes": 64,
+   "retained_successes": 64,
+   "retention_denominator": 64
+  },
+  "override_controls": {
+   "count": 0,
+   "base_successes": 0,
+   "edited_successes": 0,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  }
+ },
+ "usd": 12.6769,
+ "restarts": 1,
+ "patch": {
+  "format": "iwibench.replacements.v1",
+  "changed_parameters": 25596,
+  "l2": 705.6906490205777,
+  "linf": 390.0022888183594,
+  "tensors": 5,
+  "sha256": "02982a523bfa7a8e551944075ec6fcc520ec7c20cd7147cb01c5c99b838d69b4",
+  "weight_revision": 47,
+  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.31.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.31.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.31.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"},{\"name\":\"model.language_model.layers.31.pre_feedforward_layernorm.weight\",\"indices\":\"__iwi_indices_4\",\"values\":\"__iwi_values_4\"}]"
+ },
+ "prompt_sha256": "b1b5474475e68733aa785cebc9415212cf76607f8e2ed6e8b3c53668b84d6194",
+ "export": {
+  "weight_values_removed": 71,
+  "truncated_reads_dropped": 0,
+  "truncated_inspects_stripped": 1
+ }
+}

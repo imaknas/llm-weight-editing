@@ -22,6 +22,7 @@ The write-up, with what these results do not show, is in [`docs/article-draft-en
 | `analysis/iwibench_patch_logits.py` | Compares two conditions' next-token distributions on the same token sequences. |
 | `analysis/iwi_rpc_server.py`, `iwi_tool.py` | The benchmark's `Service` class behind a file-based interface, with state on disk so an episode survives a restart. |
 | `analysis/iwi_editor_api.py` | Editor loop that calls a provider API directly: the benchmark's prompt, tool definitions, tool-output formatting, error text and stop conditions; a cost ledger. |
+| `analysis/export_runs.py`, `runs/` | Records of the six editor episodes: every model reply and tool call, with weight values removed. See `runs/README.md`. |
 | `analysis/iwi_editor_tools.json` | Tool definitions, copied from the benchmark's published traces. |
 | `docs/patch-ablation-*.md` | Plan and results for finding 1 (Traditional Chinese). |
 | `docs/editor-conditions-*.md` | Plan and results for finding 2 (Traditional Chinese). |
@@ -35,7 +36,6 @@ Working documents are in Traditional Chinese. The article and issue drafts are i
 
 - Gemma weights and Gemma-derived weight patches. They are distributed by their publishers under Gemma's terms.
 - The IWIBench source and its published rollouts. The scripts expect a local checkout and a local copy of the rollout files.
-- ⟦Run data: decide before publication whether to add the six episodes' write logs and model replies under `runs/`.⟧
 
 ## Reproducing
 

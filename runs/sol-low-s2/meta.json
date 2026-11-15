@@ -1,0 +1,88 @@
+{
+ "label": "sol-low-s2",
+ "provider": "openai",
+ "model": "gpt-6.1-sol",
+ "effort": "low",
+ "max_output": 4096,
+ "family": "factual_update",
+ "seed": 2,
+ "end": "final_reply",
+ "turns": 11,
+ "tool_calls": 10,
+ "stops": [
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "max_out": 202,
+ "sum_out": 1275,
+ "final_text": "Submitted the current weight patch. The practice prompt now returns **Mark Carney**. Checks also retained Justin Trudeau for 2020, Ottawa as Canada’s capital, and Anthony Albanese for Australia. Broader generalization remains incomplete.",
+ "session": "3dd26c780b780f09616834946792fba9d89e78d656eaf6ed",
+ "reward": 0.3333333333333333,
+ "counters": {
+  "tool_calls": 10,
+  "run_calls": 4,
+  "run_sequences": 13,
+  "inspect_calls": 3,
+  "inspect_sequences": 6,
+  "forward_tokens": 739,
+  "inspection_scalars": 10258,
+  "weight_scalars": 2560
+ },
+ "groups": {
+  "targets": {
+   "count": 3,
+   "base_successes": 0,
+   "edited_successes": 1,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  },
+  "nearby_controls": {
+   "count": 4,
+   "base_successes": 4,
+   "edited_successes": 4,
+   "retained_successes": 4,
+   "retention_denominator": 4
+  },
+  "general_controls": {
+   "count": 64,
+   "base_successes": 63,
+   "edited_successes": 63,
+   "retained_successes": 63,
+   "retention_denominator": 63
+  },
+  "override_controls": {
+   "count": 0,
+   "base_successes": 0,
+   "edited_successes": 0,
+   "retained_successes": 0,
+   "retention_denominator": 0
+  }
+ },
+ "usd": 0.2463,
+ "restarts": 0,
+ "patch": {
+  "format": "iwibench.replacements.v1",
+  "changed_parameters": 2524,
+  "l2": 0.2602987336491887,
+  "linf": 0.025665283203125,
+  "tensors": 1,
+  "sha256": "ae9f71293c06fcdbd273f03e492e77773feeffc10c2504b7da278772da1c0f9b",
+  "weight_revision": 2,
+  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"}]"
+ },
+ "prompt_sha256": "70c3937e22422218cb51e5dfea87237ca58dcda0f2677c241b6a5bd5924f4345",
+ "export": {
+  "weight_values_removed": 0,
+  "truncated_reads_dropped": 1,
+  "truncated_inspects_stripped": 2
+ }
+}
