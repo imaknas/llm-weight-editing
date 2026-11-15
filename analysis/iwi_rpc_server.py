@@ -4,18 +4,25 @@ IWIBench 原本用 HTTP 服務持有被修改的模型;這裡直接使用它的 
 patch 的產生與評分都是它的程式),只把傳輸換成檔案,讓沒有網路的 GPU 執行環境也能被另一個程序驅動。
 唯一改動的行為:評分時的裝置由參數指定(原本寫死 cuda)。
 
-請求:<rpc>/in/<id>.json = {"op": "create"|"tool"|"submit"|"grade"|"status"|"shutdown", ...}
+請求:<rpc>/in/<id>.json = {"op": "create"|"resume"|"tool"|"submit"|"grade"|"status"|"shutdown", ...}
 回應:<rpc>/out/<id>.json = {"ok": true, "result": ...} 或 {"ok": false, "error": 類別, "message": 訊息}
+
+回合的狀態會留在磁碟上,服務被停掉也能接回:每次工具呼叫後寫 <runs>/<sid>/state.json(計數器與版本),
+每次成功寫入後用 IWIBench 自己的 submit 程式對回合的副本產生 <runs>/<sid>-snapshot/patch.safetensors。
+"resume" 用同一題開新回合,套回那份 patch、計數器與操作紀錄(寫入會讓所有 handle 失效,所以不需要還原 handle;
+最後一次寫入之後才取得的 handle 會遺失)。服務活著時每 2 秒更新 <rpc>/alive,呼叫端據此判斷服務是否還在。
 
 用法(需 GPU 時經平台的 cap-run):
   python analysis/iwi_rpc_server.py --src data/iwibench-src/src --cache data/hf-cache --rpc data/iwi-rpc \
       --runs data/iwi-runs --model google/gemma-3-4b-it --device mps
 """
 import argparse
+import dataclasses
 import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -68,11 +75,75 @@ def main():
                 raise RuntimeError("Grading output count mismatch")
             return {item["id"]: result["text"] for item, result in zip(items, generations)}
 
+        def snapshot(self, sid):
+            """把目前的修改寫成 patch 檔,不動到回合本身:對回合的副本呼叫原本的 submit。"""
+            with self.lock:
+                s = self.sessions[sid]
+                key = sid + "-snapshot"
+                self.sessions[key] = dataclasses.replace(s, id=key, submitted=False, replacements=dict(s.replacements),
+                                                         handles={}, patch={})
+                try:
+                    self.submit(key)
+                finally:
+                    del self.sessions[key]
+
+        def save_state(self, sid):
+            s = self.sessions[sid]
+            (self.directory / sid / "state.json").write_text(json.dumps(
+                {"counters": s.counters.as_dict(), "revision": s.revision, "family": s.episode["family"],
+                 "seed": s.episode["parameter_seed"], "trace_id": s.trace_id}))
+
+        def resume(self, old_sid):
+            import torch
+            from safetensors import safe_open
+            from safetensors.torch import load_file
+            from iwibench.budgets import Counters
+            old = self.directory / old_sid
+            state = json.loads((old / "state.json").read_text())
+            res = self.create(state["family"], self.runtime.model_id, state["seed"], "development", state["trace_id"])
+            s = self.sessions[res["session_id"]]
+            patch = self.directory / (old_sid + "-snapshot") / "patch.safetensors"
+            if state["revision"]:
+                with safe_open(str(patch), "pt") as h:
+                    meta = h.metadata()
+                tensors = load_file(str(patch))
+                sparse = json.loads(meta.get("sparse", "[]"))
+                self.store.activate({})
+                def original(name):
+                    if name not in self.store.originals:
+                        self.store.originals[name] = self.store.params[name].detach().cpu().clone()
+                    return self.store.originals[name]
+                for e in sparse:
+                    value = original(e["name"]).clone()
+                    value.reshape(-1)[tensors[e["indices"]]] = tensors[e["values"]]
+                    s.replacements[e["name"]] = value
+                used = {e[k] for e in sparse for k in ("indices", "values")}
+                for name, value in tensors.items():
+                    if name not in used:
+                        original(name)
+                        s.replacements[name] = value.clone()
+            s.counters = Counters(**state["counters"])
+            s.revision = state["revision"]
+            new = self.directory / s.id
+            new.mkdir(exist_ok=True)
+            lines = (old / "trajectory.jsonl").read_text() if (old / "trajectory.jsonl").exists() else ""
+            (new / "trajectory.jsonl").write_text(lines)
+            s.trajectory = [json.loads(l) for l in lines.splitlines()]
+            if state["revision"]:
+                self.snapshot(s.id)
+            self.save_state(s.id)
+            return {**res, "counters": s.counters.as_dict(), "revision": s.revision, "resumed_from": old_sid}
+
     runtime = NativeTarget(a.model, MODELS[a.model], device=a.device, cache_dir=cache)
     service = FileService(runtime, a.runs, cache_dir=cache)
     rpc = Path(a.rpc)
     (rpc / "in").mkdir(parents=True, exist_ok=True)
     (rpc / "out").mkdir(parents=True, exist_ok=True)
+    def beat():
+        while True:
+            (rpc / "alive").write_text(str(time.time()))
+            time.sleep(2.0)
+    threading.Thread(target=beat, daemon=True).start()
     (rpc / "ready").write_text(json.dumps({"model": a.model, "device": a.device, "pid": os.getpid(), "time": time.time()}))
     print("ready", flush=True)
     last = time.time()
@@ -93,8 +164,17 @@ def main():
             try:
                 if op == "create":
                     res = service.create(req["family"], a.model, req.get("seed", 0), "development", req.get("trace_id", ""))
+                    service.save_state(res["session_id"])
+                elif op == "resume":
+                    res = service.resume(req["session_id"])
                 elif op == "tool":
-                    res = service.call(req["session_id"], req["name"], req["payload"])
+                    try:
+                        res = service.call(req["session_id"], req["name"], req["payload"])
+                        if req["name"] == "write_weights":
+                            service.snapshot(req["session_id"])
+                    finally:
+                        if req["session_id"] in service.sessions:
+                            service.save_state(req["session_id"])
                 elif op == "submit":
                     res = service.submit(req["session_id"])
                 elif op == "grade":
