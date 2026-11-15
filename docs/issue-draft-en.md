@@ -4,7 +4,7 @@
 
 **Observations from re-grading the published rollouts: no score traces to an internal-layer edit; notes on `factual_update` and on running off-CUDA**
 
-Hi — thank you for publishing the rollouts, patches and native traces; that is what made the following possible. I re-graded some of the published patches locally with your grading worker and scorer, and ran a few extra editor episodes against your `Service` class. Four observations that may be useful to you. Details, code and limits: ⟦link to article⟧.
+Hi — thank you for publishing the rollouts, patches and native traces; that is what made the following possible. I re-graded some of the published patches locally with your grading worker and scorer, and ran a few extra editor episodes against your `Service` class. Four observations that may be useful to you. Scripts, a fuller write-up and the limits are at https://github.com/imaknas/llm-weight-editing (`docs/article-draft-en.md`).
 
 **1. In the 330 family-0.2.2 rollouts, no score is attributable to an internal-layer edit.**
 From the service trajectories and patch metadata: 3,342 of 3,683 successful writes go to the tied embedding/output matrix; 28 final patches contain internal tensors, 24 of them score 0, and the 11 that contain only internal tensors all score 0. I split the four scored mixed patches by tensor and re-graded each part (base and full reproduce your published numbers exactly on Apple MPS):
