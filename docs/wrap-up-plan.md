@@ -111,6 +111,14 @@ itself; here it does not complete "Tan" or "Merz". A label at the last prompt po
 answer. **By the rule in 1.4 only one seed passes, so part one is not run with this label.** Sections 1.2 and 1.5
 to 1.7 are kept as written but have not been carried out. Check 3 was not needed.
 
+What failed is this label together with an edit that moves only the first token of the answer. It says nothing
+about whether a richer address, for instance one per answer token, would be enough. The two zeros were scored
+with the benchmark's grader and rescored once by me; no second party has recomputed them yet.
+
+On the order of events: the rule in 1.4 was written before these two seeds were graded, but after their strength
+scans had run and after a reviewer had predicted that seed 0 would fail. Version 1 was not committed, so the
+repository's history does not show this order.
+
 **Check 3, before any paid run: is the edit within the tools?** The scripted edit for one passing seed is carried
 out through the benchmark's own service with `write_weights` calls only, inside the tool budget, and submitted for
 grading. If the service refuses it or the reward differs from the patch graded directly, that is reported and
@@ -157,8 +165,9 @@ not exclusive.
   address was enough for this editor to make a scoring internal edit on these facts. If it also occurs in R or B,
   no claim is made about the address.
 - **Hint.** If "wrote inside" is more frequent in both L and R than in B, with "scored inside" in neither: the
-  block prompts the editor to try, and the address did not help it succeed. The base rate matters here: 36 of the
-  330 published rollouts wrote inside.
+  block prompts the editor to try, and the address did not help it succeed. The base rate matters here: of the
+  330 published rollouts, 36 wrote to an internal layer at some point and 28 final patches contain internal
+  tensors.
 - **No effect.** If L and R look like B on measurements 1 to 3 and "noticed the block" is mostly true: making
   neurons addressable in this way does not move this editor. Weak evidence at this size. If "noticed the block" is
   mostly false, the manipulation did not register and nothing is concluded.
@@ -235,7 +244,11 @@ each made by a different editor with a different output budget.
 
 ## 4. Changes from version 1 after review
 
-Two reviewers, one able to read the code and data. Problems were taken as a union and checked against the files.
+Two reviewers, one able to read the code and data. Problems were taken as a union. Checked against the files by
+me: the split tool's refusal of pure patches, the mismatches between the label rule and the script, the identical
+margins of the first two scripted edits, the seed 3 result at batch size 1, the published counts of internal
+writes, and the episode costs. The rest were accepted on the reviewers' reasoning. Version 2 has not been
+reviewed again; sections 2.1 to 2.5 get one more cold review before part two is run.
 
 - The shuffled-label control attached the real units' numbers to inert units, which made it "false magnitudes",
   not "wrong address". Replaced by R, truthful labels of random units.
