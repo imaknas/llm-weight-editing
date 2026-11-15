@@ -273,6 +273,43 @@ observations, not rates.
 Not concluded: a capability limit in general, since a larger response cap and other reasoning settings are not
 run; and anything about why Fable took the internal route with the table open.
 
+### 1A.4 The other side: Fable with less reasoning
+
+1A.3 asks whether Sol can leave the token table when it has to. It cannot say whether Fable's internal edits come
+from the model or from the amount of reasoning it was given: Sol wrote about 2,000 tokens per episode and Fable
+more than 100,000. This section lowers Fable's reasoning and looks at where it writes.
+
+**Manipulation.** `claude-fable-5-2` with effort low in place of high. Everything else as in the earlier Fable
+episodes: the benchmark's prompt and tools, the token table open, the 32,000-token response cap. The cap is kept
+because this model's thinking cannot be switched off and counts toward it; only the effort setting changes.
+
+**Episodes.** Run after 1A.3, with what is left of the budget. One episode, seed 2 (the fact whose earlier
+episode ran without interruption, at 9.65 US dollars and 119,395 output tokens). The cost at effort low is not
+known: about 2 dollars if the episode is as short as Sol's, more than 6 if output only halves. A low stop would let
+through only short episodes, which are the ones that take the token-table route, and so would decide the result.
+The stop is therefore set to everything that remains after 1A.3, less 1 dollar, and the driver's reservation of a
+full response before each call is counted inside it. An episode cut by the stop is not resumed. Seeds 0 and 3 are
+run only if, after seed 2 ended with a final reply, the ledger has room for twice 1.4 times its cost; otherwise
+seed 2 stands alone and that is said. If the API rejects effort low for this model, the section is not run.
+
+**Measurements.** As for the earlier Fable episodes: reward; the patch split into token-table and internal parts,
+each graded alone; the tensors written; tool calls made; how the episode ended; and the output tokens produced,
+per response and in total.
+
+**Readings, fixed in advance.** One to three episodes; observations. "Scores" means a reward above 0. Only
+episodes that end with a final reply are read; a cut episode is reported with what it had written and nothing is
+concluded from it.
+
+- *Manipulation check first.* If the episode's total output is not below half of the same seed's total at effort
+  high, the setting did not take, and the episode is reported as a repeat of the earlier condition.
+- *The internal part alone scores*: this model takes and completes the internal route at the lower setting too. If
+  its output is still far above Sol's, that is stated; the two editors remain unmatched on volume.
+- *The token-table part alone scores and the internal part does not*: at the lower setting this model's scoring
+  edit is on the token table, as Sol's is. The difference between the editors then follows the effort setting at
+  least in part. Effort lowers reasoning and tool use together, and thinking is not returned by the API, so the
+  two are not told apart; and with a single episode per setting, run-to-run variation is not excluded.
+- *Only the two parts together score, or nothing scores*: reported, nothing concluded about the route.
+
 ## 2. Part two: the two kinds of edit on the same facts
 
 ### 2.1 Material
