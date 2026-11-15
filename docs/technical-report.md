@@ -127,6 +127,6 @@ The plan, including how each outcome would be read, was written and reviewed bef
 
 ## Disclosure, corrections
 
-Drafted with an AI agent as described above; API costs of about 35 US dollars were paid by the author. Corrections will be listed here with dates. To report an error, open an issue on the repository.
+Drafted with an AI agent as described above; API costs of about 35 US dollars were paid by the author. Corrections will be listed here with dates. To report an error, open an issue on this repository.
 
 - 2026-11-15: the benchmark's authors were notified of these findings in https://github.com/hcltech-robotics/iwibench/issues/4.
