@@ -172,11 +172,24 @@ Intel           Tan          Lip--stein                Brown
 
 ☐ 六格都不是正確答案。
 
-### 3-2 文章沒有把這一點說過頭
+### 3-2 這一點原作者已經寫過,文章有沒有照實說
 
-`docs/technical-report.md` 的 Finding 3 第一點應該是:"None of the nine patches we graded locally passes the surname-only target. No published `factual_update` rollout exceeds 2/3 targets; which target they missed is not in the public data."
+原作者的論文已經寫了:Astra 在加拿大那題「surname-only question returns Martin」,並把「a new full name fails on a surname-only question」列為限制。
+所以「改詞向量過不了姓氏題」**不是我們的發現**。我們新增的只有:改內部層的修改同樣過不了。
 
-☐ 文章寫的是「我們評過的沒有一個通過」,不是「所有編輯者都沒通過」。
+打開 `docs/technical-report.md`,Finding 3 第一點應該以 "The IWIBench paper reports the surname failure itself" 開頭,並在後面說 "What we add"。
+
+☐ 文章有寫明這一點原作者已經報告過,我們只是補上內部層的部分。
+
+### 3-3 哪些是新的、哪些不是
+
+`docs/technical-report.md` 有一節 "Related work, and what is new here"。你要看的是它有沒有分清楚三件事:
+
+- 主張一(公布的回合沒有分數來自內部層):目前查不到別人做過。
+- 主張二:別人已經顯示 Claude 的模型在能跑程式的環境下會做這種修改;我們新增的是「在 IWIBench 受限的工具下也會,而且用它自己的評分」。
+- 主張三:姓氏題原作者寫過;我們新增的是內部層的部分。
+
+☐ 三件事都有分清楚,沒有把別人做過的說成我們的。
 
 ---
 

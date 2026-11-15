@@ -8,7 +8,9 @@ Author: Knas Xiao. Licence: MIT (see `LICENSE`, `NOTICE.md`).
 
 1. In the 330 published IWIBench rollouts, no score is attributable to an edit of an internal layer. Editors that scored did so by rewriting rows of the token-embedding matrix. Four scored patches also change attention, MLP or normalisation weights. With those changes removed each scores the same, and with only those changes kept each scores zero.
 2. An internal-layer edit that scores is possible with the benchmark's own prompt, tools and service-side budgets. Claude Fable 5.2 wrote MLP neurons on three `factual_update` episodes and scored 0.667 on each, and the internal part of each patch alone reproduces the score. One of the three episodes ran without interruption. Two were cut by our own cost cap and then resumed. We set the response cap to 32,000 tokens for this model instead of the benchmark's 4,096, so these runs are not comparable with the published leaderboard. On the same service and driver, gpt-6.1-sol in its published setting edited embedding rows only, as in its published runs.
-3. Both kinds of edit reach at most 2 of 3 targets on these episodes, and none of the patches we graded passes the target that asks for the surname only.
+3. Both kinds of edit reach at most 2 of 3 targets on these episodes. The IWIBench paper already reports that embedding-row edits fail the target that asks for the surname only. The internal-neuron edits fail it too.
+
+Finding 1 is new as far as we could find. For finding 2, others have shown Claude models making this kind of edit with a code sandbox, so what is new is that it also happens inside IWIBench's restricted tools and is scored by its grader. The write-up has a related-work section with the sources.
 
 The write-up, with what these results do not show, is in [`docs/technical-report.md`](docs/technical-report.md). The note sent to the benchmark's authors is in [`docs/issue-draft-en.md`](docs/issue-draft-en.md).
 
