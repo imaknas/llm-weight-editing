@@ -1,0 +1,6 @@
+{"note": "Counts over the three facts (seeds 2, 0, 3), from data/probes/run/*/probe-{base,token_table,neuron_full}.json. Reworded: paraphrase probes whose answer contains the new surname as a whole word. Yes/no: the 13 yes-or-no probes about the new holder, read one by one; a reply counts as yes only if it opens with yes or true. Surname only: the one surname-only probe per fact. Earlier date: other_date probes whose date is before 2025, answer contains the new surname as a whole word.",
+ "rows": [
+  {"base": [0, 36], "table": [28, 36], "neuron": [29, 36]},
+  {"base": [0, 13], "table": [0, 13], "neuron": [0, 13]},
+  {"base": [0, 3], "table": [0, 3], "neuron": [0, 3]},
+  {"base": [0, 27], "table": [6, 27], "neuron": [8, 27]}]}
