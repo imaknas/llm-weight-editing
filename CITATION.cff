@@ -8,7 +8,9 @@ authors:
     orcid: "https://orcid.org/0009-0007-0414-2355"
 repository-code: "https://github.com/imaknas/llm-weight-editing"
 license: MIT
-date-released: "2026-11-15"
+version: "1.0.0"
+date-released: "2026-11-16"
+abstract: "Analysis code, episode records and reports on where language-model editors change another model's weights in the IWIBench benchmark: a patch ablation of the published rollouts, editor episodes with the token table open and locked, and a comparison of token-table and neuron edits on blind-written probes. No model weights are included."
 preferred-citation:
   type: report
   title: "In IWIBench, no published score comes from an internal-layer edit, but one is possible with the same tools"
