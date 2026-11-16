@@ -1,5 +1,7 @@
 # llm-weight-editing
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24279813.svg)](https://doi.org/10.5281/zenodo.24279813)
+
 Experiments on language models that read and edit the weights of other models. The current stage is a re-analysis of [IWIBench](https://github.com/HCLTech-robotics/iwibench) (arXiv 2611.08647), a benchmark in which an "editor" model changes the weights of Gemma 3 4B through four tools.
 
 Author: Knas Xiao ([ORCID 0009-0007-0414-2355](https://orcid.org/0009-0007-0414-2355)). Licence: MIT (see `LICENSE`, `NOTICE.md`). To cite, see `CITATION.cff`.
