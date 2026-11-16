@@ -77,7 +77,7 @@ The edits have the same shape in all three: a neuron whose input weights match t
 
 This is a conditional boost of specific output tokens at a specific position, not an updated fact the model can reason with: the target that asks for the surname only fails in all three (outputs "Markus", "Brown", "Scholz").
 
-**One small case of reading weights.** In seed 3 the editor read eight elements of a normalisation weight, then changed one of them (index 443, from −1 to −0.996), without which its neurons do not work. From the order of calls this followed an unusually large value seen in inspected activations; the model's reasoning text is not returned by the API, so the "why" is our inference.
+**One small case of reading weights.** In seed 3 the editor read eight elements of a normalisation weight, then changed one of them (index 443, from −1 to −0.996), without which its neurons do not work. From the order of calls this followed an unusually large value seen in inspected activations; the model's reasoning text was not recorded, so the "why" is our inference. (2026-11-16: correction. This said the API does not return it; the API can return a summary on request, and our runs did not ask for one.)
 
 ## Finding 3: the tie, and what the benchmark's grading cannot see
 

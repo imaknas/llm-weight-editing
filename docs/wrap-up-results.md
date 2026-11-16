@@ -148,7 +148,8 @@ The question was why one editor wrote token-table rows and the other MLP neurons
   which scored 0.
 - It is not that Fable needs its large output to go inside. At 36 to 40% of it, it still does.
 - So on these facts the difference is in which route each editor takes when both are open. Why each takes its
-  route is not shown. The API does not return either model's reasoning.
+  route is not shown. Neither model's reasoning was recorded. Both APIs can return a summary of it on request, and these runs did not
+  ask for one. (2026-11-16: an earlier version of this line said the APIs do not return it.)
 - The two routes give edits that the benchmark and 216 scored probes do not consistently tell apart.
 
 Not shown: anything beyond one family, three facts and two editors; what Sol would do with larger responses; what

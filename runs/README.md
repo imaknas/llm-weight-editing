@@ -45,7 +45,7 @@ Six editor episodes on IWIBench `factual_update` (development split), run with `
 - Arrays of weight values returned by `read_weights`, replaced by a count. Gemma's weights are distributed under Gemma's terms, not under this repository's licence. Shapes, handles and scalar summaries are kept.
 - `read_weights` outputs that the harness had truncated, replaced by a one-line note, because a truncated output cannot be reliably stripped of values.
 - Long runs of numbers in truncated `inspect_target` outputs.
-- Encrypted reasoning items (gpt-6.1-sol) and thinking-block signatures (claude-fable-5-2). The API returned no readable reasoning text for either model.
+- Encrypted reasoning items (gpt-6.1-sol) and thinking-block signatures (claude-fable-5-2). The runs did not ask for reasoning summaries, so no readable reasoning text was returned for either model.
 
 The `export` field of each `meta.json` gives the counts. Write requests are complete. They are expressions over named tensors, short constants supplied by the editor, and handles returned by earlier `read_weights` and `inspect_target` calls in the same file. Those calls are deterministic, so replaying all of a file's tool calls in order against the base checkpoint, mapping each old handle id to the new one, should rebuild the same patch. We have not run such a replay end to end.
 
