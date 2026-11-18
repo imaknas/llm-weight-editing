@@ -96,7 +96,8 @@
   "tensors": 4,
   "sha256": "f4434cbeec6b366fdec1d59bf25c18ba60240f54dc837b31b7d1caeda9ea20a7",
   "weight_revision": 22,
-  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.31.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.31.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.31.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"}]"
+  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.31.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.31.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.31.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"}]",
+  "content_sha256": "91eef9791f5b57b2f668d0ab1e63effadf4743ed072a1576583a875a3dec54a9"
  },
  "prompt_sha256": "70c3937e22422218cb51e5dfea87237ca58dcda0f2677c241b6a5bd5924f4345",
  "export": {

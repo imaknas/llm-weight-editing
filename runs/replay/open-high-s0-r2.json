@@ -1,0 +1,26 @@
+{
+ "record": "open-high-s0-r2",
+ "calls": 39,
+ "problems": [],
+ "prompt_sha256_same": true,
+ "patch": {
+  "changed_parameters": {
+   "record": 35245,
+   "replay": 35245
+  },
+  "tensors": {
+   "record": 1,
+   "replay": 1
+  },
+  "content_sha256": {
+   "record": "015e17eb9a1a2d8d2dcce2685a6f79243d453746f976978a11578d0a4cccde4e",
+   "replay": "015e17eb9a1a2d8d2dcce2685a6f79243d453746f976978a11578d0a4cccde4e"
+  }
+ },
+ "patch_identical": true,
+ "reward": {
+  "record": 0.3333333333333333,
+  "replay": 0.3333333333333333
+ },
+ "groups_same": true
+}

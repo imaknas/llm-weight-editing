@@ -1,0 +1,26 @@
+{
+ "record": "fable-low-32k-s0",
+ "calls": 128,
+ "problems": [],
+ "prompt_sha256_same": true,
+ "patch": {
+  "changed_parameters": {
+   "record": 30746,
+   "replay": 30746
+  },
+  "tensors": {
+   "record": 34,
+   "replay": 34
+  },
+  "content_sha256": {
+   "record": "e9008656dc42764f1c9e8200f21efb61b1cda5a5f0eea86e9e704046366d07c5",
+   "replay": "e9008656dc42764f1c9e8200f21efb61b1cda5a5f0eea86e9e704046366d07c5"
+  }
+ },
+ "patch_identical": true,
+ "reward": {
+  "record": 0.0,
+  "replay": 0.0
+ },
+ "groups_same": true
+}

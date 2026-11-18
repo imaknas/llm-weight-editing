@@ -1,0 +1,26 @@
+{
+ "record": "lock-low-s3-r1",
+ "calls": 23,
+ "problems": [],
+ "prompt_sha256_same": true,
+ "patch": {
+  "changed_parameters": {
+   "record": 15351,
+   "replay": 15351
+  },
+  "tensors": {
+   "record": 3,
+   "replay": 3
+  },
+  "content_sha256": {
+   "record": "148d4b509d2486b27a2d337e9d6649e197a49b891b90b2dd08517c77afcfaed5",
+   "replay": "148d4b509d2486b27a2d337e9d6649e197a49b891b90b2dd08517c77afcfaed5"
+  }
+ },
+ "patch_identical": true,
+ "reward": {
+  "record": 0.6666666666666666,
+  "replay": 0.6666666666666666
+ },
+ "groups_same": true
+}

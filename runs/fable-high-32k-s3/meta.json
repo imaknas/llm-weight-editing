@@ -101,7 +101,8 @@
   "tensors": 5,
   "sha256": "02982a523bfa7a8e551944075ec6fcc520ec7c20cd7147cb01c5c99b838d69b4",
   "weight_revision": 47,
-  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.31.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.31.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.31.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"},{\"name\":\"model.language_model.layers.31.pre_feedforward_layernorm.weight\",\"indices\":\"__iwi_indices_4\",\"values\":\"__iwi_values_4\"}]"
+  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"},{\"name\":\"model.language_model.layers.31.mlp.gate_proj.weight\",\"indices\":\"__iwi_indices_1\",\"values\":\"__iwi_values_1\"},{\"name\":\"model.language_model.layers.31.mlp.up_proj.weight\",\"indices\":\"__iwi_indices_2\",\"values\":\"__iwi_values_2\"},{\"name\":\"model.language_model.layers.31.mlp.down_proj.weight\",\"indices\":\"__iwi_indices_3\",\"values\":\"__iwi_values_3\"},{\"name\":\"model.language_model.layers.31.pre_feedforward_layernorm.weight\",\"indices\":\"__iwi_indices_4\",\"values\":\"__iwi_values_4\"}]",
+  "content_sha256": "2604d3c574ecd6968213eb2ceaa0d7446fcdcda8c76a6eec79aff1e802ee7e06"
  },
  "prompt_sha256": "b1b5474475e68733aa785cebc9415212cf76607f8e2ed6e8b3c53668b84d6194",
  "export": {

@@ -1,0 +1,26 @@
+{
+ "record": "lock-high-s2-r1",
+ "calls": 30,
+ "problems": [],
+ "prompt_sha256_same": true,
+ "patch": {
+  "changed_parameters": {
+   "record": 7677,
+   "replay": 7677
+  },
+  "tensors": {
+   "record": 3,
+   "replay": 3
+  },
+  "content_sha256": {
+   "record": "234476b8ebadc46b4058ed66d369c04aa069961b0434c94efdcfc9e02f47402d",
+   "replay": "234476b8ebadc46b4058ed66d369c04aa069961b0434c94efdcfc9e02f47402d"
+  }
+ },
+ "patch_identical": true,
+ "reward": {
+  "record": 0.6666666666666666,
+  "replay": 0.6666666666666666
+ },
+ "groups_same": true
+}

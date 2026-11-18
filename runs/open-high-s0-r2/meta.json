@@ -107,7 +107,8 @@
   "tensors": 1,
   "sha256": "5e266bd12c0e83f5550a6ba60c4822f88f7e059c1b0c34500890f6daf6409545",
   "weight_revision": 24,
-  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"}]"
+  "sparse": "[{\"name\":\"model.language_model.embed_tokens.weight\",\"indices\":\"__iwi_indices_0\",\"values\":\"__iwi_values_0\"}]",
+  "content_sha256": "015e17eb9a1a2d8d2dcce2685a6f79243d453746f976978a11578d0a4cccde4e"
  },
  "prompt_sha256": "cce02a951ee950a3a4fb57c2d8c0f58c40d08c6434f20c3a0310ee2021ad81ad",
  "export": {
