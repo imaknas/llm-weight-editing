@@ -8,7 +8,7 @@
   - 模型回應裡不可讀的項目:加密的 reasoning 內容、thinking 區塊的簽章。
   - 本機路徑。
 寫入的請求(write_weights 的參數)完整保留:它們是引用張量名稱的運算式、編輯者自己給的短常數,以及同一回合先前讀取 / 檢查所回傳的 handle。
-那些呼叫是決定性的,所以照順序重放全部的工具呼叫(並把舊的 handle 對到新的)應該能重建同一份修改;這個重放沒有完整實測過。
+那些呼叫是決定性的,所以照順序重放全部的工具呼叫(並把舊的 handle 對到新的)能重建同一份修改(analysis/replay_episode.py;24 個有評分的回合都實測過,見 docs/replay.md)。
 
 用法:python3 analysis/export_runs.py <輸出目錄> <回合名稱>...
 """
@@ -18,6 +18,7 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 SRC = Path("data/api-runs")
 NUMBER_LINE = re.compile(r"^\s*-?\d+(\.\d+)?([eE][-+]?\d+)?,?\s*$")
 
@@ -114,6 +115,10 @@ def export(label, dest):
     meta = json.loads((src / "meta.json").read_text())
     patch = meta.pop("patch", None) or {}
     meta["patch"] = {k: patch[k] for k in ("format", "changed_parameters", "l2", "linf", "tensors", "sha256", "weight_revision", "sparse") if k in patch}
+    if patch.get("path") and Path(patch["path"]).exists():
+        # 內容的指紋:重放紀錄後可以拿來比對,不受檔頭寫法影響,也不含權重數值
+        from replay_episode import content_sha256
+        meta["patch"]["content_sha256"] = content_sha256(patch["path"])
     meta["prompt_sha256"] = hashlib.sha256((src / "prompt.txt").read_bytes()).hexdigest()
     meta["export"] = stats
     (out / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1) + "\n")
